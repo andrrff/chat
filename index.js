@@ -25,6 +25,9 @@ io.on('connection', (socket) => {
   })
 });
 
-server.listen(80, () => {
-  console.log('listening on *:3000');
+var server_port = process.env.YOUR_PORT || process.env.PORT || 80;
+var server_host = process.env.YOUR_HOST || "0.0.0.0";
+
+app.listen(server_port, server_host, function () {
+    log.info("Listening on port %d", server_port);
 });
