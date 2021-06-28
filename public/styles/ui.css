@@ -23,6 +23,7 @@ body {
     flex-grow: 1;
     border-radius: 2rem;
     margin: 0.25rem;
+    resize: none;
 }
 #input:focus {
     outline: none;
