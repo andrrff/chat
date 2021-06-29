@@ -8,14 +8,10 @@ var username = document.getElementById("username");
 
 (async () => {
     const { value: formValues } = await Swal.fire({
-        title: "Welcome",
-        html:
-            '<input id="swal-input1" type="username" placeholder="username" class="swal2-input">',
-        focusConfirm: true,
+        title: "Welcome to Chat-Andrrff",
+        html: '<input id="swal-input1" type="username" placeholder="username" class="swal2-input">',
         preConfirm: () => {
-            return [
-                document.getElementById("swal-input1").value,
-            ];
+            return [document.getElementById("swal-input1").value];
         },
     });
     console.log("Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊");
