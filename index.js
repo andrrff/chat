@@ -7,14 +7,9 @@ const io = new Server(server);
 
 var users = 0;
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
-
-// io.emit("some event", {
-//     someProperty: "some value",
-//     otherProperty: "other value",
-// });
 
 io.on('connection', (socket) => {
   users++;
