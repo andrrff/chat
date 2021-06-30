@@ -4,7 +4,7 @@
     "description": "Application chat message in realtime with socket.io and express",
     "main": "index.js",
     "scripts": {
-        "start": "nodemon -e css,ejs,js,json --watch index"
+        "start": "browserify public/js/socket.js -o public/js/socketFine.js && nodemon -e css,ejs,js,json --watch index"
     },
     "repository": {
         "type": "git",
@@ -19,6 +19,7 @@
     "homepage": "https://github.com/andrrff/chat#readme",
     "dependencies": {
         "browserify": "^17.0.0",
+        "browserify-fs": "^1.0.0",
         "es6-promise": "^4.2.8",
         "express": "^4.17.1",
         "jquery": "^3.6.0",

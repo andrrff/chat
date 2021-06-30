@@ -5,18 +5,33 @@ const express = require("express"),
     { Server } = require("socket.io"),
     io = new Server(server),
     fs = require("fs"),
+    path = require('path');
     siofu = require("socketio-file-upload");
 
+var values;
+const directoryPath = path.join(__dirname, "public/upload/images/");
+//passsing directoryPath and callback function
+fs.readdir(directoryPath, function (err, files) {
+    //handling error
+    if (err) {
+        return console.log("Unable to scan directory: " + err);
+    }
+    //listing all files using forEach
+    files.forEach(function (file) {
+        // Do whatever you want to do with the file
+        console.log(JSON.stringify(files));
+    });
+});
+app.get("/", (_req, res) => {
+    res.sendFile(__dirname + "/view/index.html");
+});
 
+// console.log(JSON.stringify(values));
 
 //Json.stringify()
 var usocket = {},
     user = [];
 var users = 0;
-
-app.get("/", (_req, res) => {
-    res.sendFile(__dirname + "/view/index.html");
-});
 
 io.on("connection", (socket) => {
     users++;
@@ -39,9 +54,16 @@ io.on("connection", (socket) => {
         }
     });
 
+    
     var uploader = new siofu();
-    uploader.dir = __dirname + "/public/uploud/images";
+    uploader.dir = __dirname + "/public/upload/images";
     uploader.listen(socket);
+
+    uploader.on("saved", function (event) {
+        // console.log(event.file);
+
+        uploader.listen(socket);
+    });
 });
 
 app.set("port", process.env.PORT || 3000);
