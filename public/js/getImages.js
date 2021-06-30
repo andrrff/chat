@@ -35,10 +35,10 @@ file.addEventListener("change", () => {
 //     }
 // });
 
-actionButton.addEventListener("click", () =>
-{
+// actionButton.addEventListener("click", () =>
+// {
     
-});
+// });
 
 socket.on("buffer", (buffer) =>
 {
