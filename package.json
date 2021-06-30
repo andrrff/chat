@@ -4,7 +4,7 @@
     "description": "Application chat message in realtime with socket.io and express",
     "main": "index.js",
     "scripts": {
-        "start": "browserify public/js/socket.js -o public/js/socketFine.js && nodemon -e css,ejs,js,json --watch index"
+        "start": "browserify public/js/getImages.js -o public/js/getImagesFine.js && browserify public/js/socket.js -o public/js/socketFine.js && nodemon -e css,ejs,js,json --watch index"
     },
     "repository": {
         "type": "git",
