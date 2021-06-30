@@ -3,7 +3,11 @@ const express = require("express"),
     http = require("http"),
     server = http.createServer(app),
     { Server } = require("socket.io"),
-    io = new Server(server);
+    io = new Server(server),
+    fs = require("fs"),
+    siofu = require("socketio-file-upload");
+
+
 
 //Json.stringify()
 var usocket = {},
@@ -34,10 +38,15 @@ io.on("connection", (socket) => {
             usocket[res.recipient].emit("receive private message", res);
         }
     });
+
+    var uploader = new siofu();
+    uploader.dir = __dirname + "/public/uploud/images";
+    uploader.listen(socket);
 });
 
 app.set("port", process.env.PORT || 3000);
 app.use(express.static("public"));
+app.use(siofu.router);
 
 server.listen(app.get("port"), function () {
     console.log("Node app is running on port", app.get("port"));

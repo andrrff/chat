@@ -1,7 +1,15 @@
 var socket = io();
+var SocketIOFileUpload = require("socketio-file-upload");
+const Swal = require("sweetalert2");
+
+var socket = io.connect();
+var uploader = new SocketIOFileUpload(socket);
+uploader.listenOnInput(document.getElementById("file"));
+
+console.log(uploader.useText);
 
 var messages = document.getElementById("messages");
-var button = document.getElementById("button");
+// var button = document.getElementById("button");
 var form = document.getElementById("form");
 var input = document.getElementById("input");
 
@@ -35,33 +43,3 @@ var input = document.getElementById("input");
     });
 })();
 
-// files.addEventListener("onclick", file());
-function file() {
-    (async () => {
-        const { value: file } = await Swal.fire({
-            title: "Select image",
-            input: "file",
-            inputAttributes: {
-                "accept": "image/*",
-                "aria-label": "Upload your profile picture",
-            },
-        });
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                Swal.fire({
-                    title: "Your uploaded picture",
-                    imageUrl: e.target.result,
-                    imageAlt: "The uploaded picture",
-                });
-            };
-            // socket.on("chat message", (msg, user) => {
-            //     var item = document.createElement("li");
-            //     item.innerHTML =
-            //         "<strong>" + user + "</strong>" + ": " + reader.readAsDataURL(file); + "</div>";
-            //     messages.appendChild(item);
-            //     window.scrollTo(0, document.body.scrollHeight);
-            // });
-        }
-    })();
-}

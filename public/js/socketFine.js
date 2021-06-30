@@ -1,3 +1,777 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+/*
+ *                 Copyright (C) 2015 Shane Carr and others
+ *                               X11 License
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ * Except as contained in this notice, the names of the authors or copyright
+ * holders shall not be used in advertising or otherwise to promote the sale,
+ * use or other dealings in this Software without prior written authorization
+ * from the authors or copyright holders.
+ */
+
+// Do not check function indentation because this is intentionally ignored in order to preserve history in git.
+/* eslint-disable indent */
+
+/*
+ * A client-side JavaScript object to handle file uploads to a Node.JS server
+ * via Socket.IO.
+ * @implements EventTarget
+ * @param {SocketIO} socket The current Socket.IO connection.
+ */
+(function (scope, name, factory) {
+	/* eslint-disable no-undef */
+	if (typeof define === "function" && define.amd) {
+		define([], factory);
+	}
+	else if (typeof module === "object" && module.exports) {
+		module.exports = factory();
+	}
+	else {
+		scope[name] = factory();
+	}
+	/* eslint-enable no-undef */
+}(this, "SocketIOFileUpload", function () {
+ return function (socket, options) {
+	"use strict";
+
+	var self = this; // avoids context issues
+
+	// Check for compatibility
+	if (!window.File || !window.FileReader) {
+		throw new Error("Socket.IO File Upload: Browser Not Supported");
+	}
+
+	if ( !window.siofu_global ) {
+		window.siofu_global = {
+			instances: 0,
+			downloads: 0
+		};
+	}
+
+	// Private and Public Variables
+	var callbacks = {},
+		uploadedFiles = {},
+		chunkCallbacks = {},
+		readyCallbacks = {},
+		communicators = {};
+
+	var _getOption = function (key, defaultValue) {
+		if(!options) {
+			return defaultValue;
+		}
+		return options[key] || defaultValue;
+	};
+
+	self.fileInputElementId = "siofu_input_"+window.siofu_global.instances++;
+	self.resetFileInputs = true;
+	self.useText = _getOption("useText", false);
+	self.serializedOctets = _getOption("serializedOctets", false);
+	self.useBuffer = _getOption("useBuffer", true);
+	self.chunkSize = _getOption("chunkSize", 1024 * 100); // 100kb default chunk size
+	self.topicName = _getOption("topicName", "siofu");
+
+	/**
+	* WrapData allow you to wrap the Siofu messages into a predefined format.
+	* You can then easily use Siofu packages even in strongly typed topic.
+	* wrapData can be a boolean or an object. It is false by default.
+	* If wrapData is true it will allow you to send all the messages to only one topic by wrapping the siofu actions and messages.
+	*
+	* ex:
+	{
+		action: 'complete',
+		message: {
+		 id: id,
+		 success: success,
+		 detail: fileInfo.clientDetail
+		}
+	}
+	*
+	* If wrapData is an object constituted of two mandatory key and one optional:
+	* wrapKey and unwrapKey (mandatory): Corresponding to the key used to wrap the siofu data and message
+	* additionalData (optional): Corresponding to the data to send along with file data
+	*
+	* ex:
+	* if wrapData = {
+		wrapKey: {
+			action: 'actionType',
+			message: 'data'
+		},
+		unwrapKey: {
+			action: 'actionType',
+			message: 'message'
+		},
+		additionalData: {
+			acknowledgement: true
+		}
+	}
+	* When Siofu will send for example a complete message this will send:
+	*
+	{
+		acknowledgement: true,
+		actionType: 'complete',
+		data: {
+		 id: id,
+		 success: success,
+		 detail: fileInfo.clientDetail
+		}
+	}
+	* and it's waiting from client data formatted like this:
+	*
+	{
+		actionType: '...',
+		message: {...}
+	}
+	* /!\ If wrapData is wrong configured is interpreted as false /!\
+	*/
+	self.wrapData = _getOption("wrapData", false);
+
+	var _isWrapDataWellConfigured = function () {
+		if (typeof self.wrapData === "boolean") {
+			return true;
+		}
+		if (typeof self.wrapData !== "object" || Array.isArray(self.wrapData)) {
+			return false;
+		}
+
+		if(!self.wrapData.wrapKey || typeof self.wrapData.wrapKey.action !== "string" || typeof self.wrapData.wrapKey.message !== "string" ||
+			!self.wrapData.unwrapKey || typeof self.wrapData.unwrapKey.action !== "string" || typeof self.wrapData.unwrapKey.message !== "string") {
+			return false;
+		}
+
+		return true;
+	};
+
+
+	/**
+	 * Allow user to access to some private function to customize message reception.
+	 * This is used if you specified wrapOptions on the client side and have to manually bind message to callback.
+	 */
+	self.exposePrivateFunction = _getOption("exposePrivateFunction", false);
+
+	var _getTopicName = function (topicExtension) {
+		if (self.wrapData) {
+			return self.topicName;
+		}
+
+		return self.topicName + topicExtension;
+	};
+
+	var _wrapData = function (data, action) {
+		if(!_isWrapDataWellConfigured() || !self.wrapData) {
+			return data;
+		}
+		var dataWrapped = {};
+		if(self.wrapData.additionalData) {
+			Object.assign(dataWrapped, self.wrapData.additionalData);
+		}
+
+		var actionKey = self.wrapData.wrapKey && typeof self.wrapData.wrapKey.action === "string" ? self.wrapData.wrapKey.action : "action";
+		var messageKey = self.wrapData.wrapKey && typeof self.wrapData.wrapKey.message === "string" ? self.wrapData.wrapKey.message : "message";
+
+		dataWrapped[actionKey] = action;
+		dataWrapped[messageKey] = data;
+		return dataWrapped;
+	};
+
+	/**
+	 * Private method to dispatch a custom event on the instance.
+	 * @param  {string} eventName  Name for which listeners can listen.
+	 * @param  {object} properties An object literal with additional properties
+	 *                             to be attached to the event object.
+	 * @return {boolean} false if any callback returned false; true otherwise
+	 */
+	var _dispatch = function (eventName, properties) {
+		var evnt = document.createEvent("Event");
+		evnt.initEvent(eventName, false, false);
+		for (var prop in properties) {
+			if (properties.hasOwnProperty(prop)) {
+				evnt[prop] = properties[prop];
+			}
+		}
+		return self.dispatchEvent(evnt);
+	};
+
+	/**
+	 * Private method to bind an event listener.  Useful to ensure that all
+	 * events have been unbound.  Inspired by Backbone.js.
+	 */
+	var _listenedReferences = [];
+	var _listenTo = function (object, eventName, callback, bubble) {
+		object.addEventListener(eventName, callback, bubble);
+		_listenedReferences.push(arguments);
+	};
+	var _stopListeningTo = function (object, eventName, callback, bubble) {
+		if (object.removeEventListener) {
+			object.removeEventListener(eventName, callback, bubble);
+		}
+	};
+	var _stopListening = function () {
+		for (var i = _listenedReferences.length - 1; i >= 0; i--) {
+			_stopListeningTo.apply(this, _listenedReferences[i]);
+		}
+		_listenedReferences = [];
+	};
+
+	/**
+	 * Private closure for the _load function.
+	 * @param  {File} file A W3C File object
+	 * @return {void}
+	 */
+	var _loadOne = function (file) {
+		// First check for file size
+		if (self.maxFileSize !== null && file.size > self.maxFileSize) {
+			_dispatch("error", {
+				file: file,
+				message: "Attempt by client to upload file exceeding the maximum file size",
+				code: 1
+			});
+			return;
+		}
+
+		// Dispatch an event to listeners and stop now if they don't want
+		// this file to be uploaded.
+		var evntResult = _dispatch("start", {
+			file: file
+		});
+		if (!evntResult) return;
+
+		// Scope variables
+		var reader = new FileReader(),
+			id = window.siofu_global.downloads++,
+			uploadComplete = false,
+			useText = self.useText,
+			offset = 0,
+			newName;
+		if (reader._realReader) reader = reader._realReader; // Support Android Crosswalk
+		uploadedFiles[id] = file;
+
+		// An object for the outside to use to communicate with us
+		var communicator = { id: id };
+
+		// Calculate chunk size
+		var chunkSize = self.chunkSize;
+		if (chunkSize >= file.size || chunkSize <= 0) chunkSize = file.size;
+
+		// Private function to handle transmission of file data
+		var transmitPart = function (start, end, content) {
+			var isBase64 = false;
+			if (!useText) {
+				try {
+					var uintArr = new Uint8Array(content);
+
+					// Support the transmission of serialized ArrayBuffers
+					// for experimental purposes, but default to encoding the
+					// transmission in Base 64.
+					if (self.serializedOctets) {
+						content = uintArr;
+					}
+					else if (self.useBuffer) {
+						content = uintArr.buffer;
+					}
+					else {
+						isBase64 = true;
+						content = _uint8ArrayToBase64(uintArr);
+					}
+				}
+				catch (error) {
+					socket.emit(_getTopicName("_done"), _wrapData({
+						id: id,
+						interrupt: true
+					}, "done"));
+					return;
+				}
+			}
+
+			// TODO override the send data
+			socket.emit(_getTopicName("_progress"), _wrapData({
+				id: id,
+				size: file.size,
+				start: start,
+				end: end,
+				content: content,
+				base64: isBase64
+			}, "progress"));
+		};
+
+		// Callback when tranmission is complete.
+		var transmitDone = function () {
+			socket.emit(_getTopicName("_done"), _wrapData({
+				id: id
+			}, "done"));
+		};
+
+		// Load a "chunk" of the file from offset to offset+chunkSize.
+		//
+		// Note that FileReader has its own "progress" event.  However,
+		// it has not proven to be reliable enough for production. See
+		// Stack Overflow question #16713386.
+		//
+		// To compensate, we will manually load the file in chunks of a
+		// size specified by the user in the uploader.chunkSize property.
+		var processChunk = function () {
+			// Abort if we are told to do so.
+			if (communicator.abort) return;
+
+			var chunk = file.slice(offset, Math.min(offset+chunkSize, file.size));
+			if (useText) {
+				reader.readAsText(chunk);
+			}
+			else {
+				reader.readAsArrayBuffer(chunk);
+			}
+		};
+
+		// Callback for when the reader has completed a load event.
+		var loadCb = function (event) {
+			// Abort if we are told to do so.
+			if (communicator.abort) return;
+
+			// Transmit the newly loaded data to the server and emit a client event
+			var bytesLoaded = Math.min(offset+chunkSize, file.size);
+			transmitPart(offset, bytesLoaded, event.target.result);
+			_dispatch("progress", {
+				file: file,
+				bytesLoaded: bytesLoaded,
+				name: newName
+			});
+
+			// Get ready to send the next chunk
+			offset += chunkSize;
+			if (offset >= file.size) {
+				// All done!
+				transmitDone();
+				_dispatch("load", {
+					file: file,
+					reader: reader,
+					name: newName
+				});
+				uploadComplete = true;
+			}
+		};
+		_listenTo(reader, "load", loadCb);
+
+		// Listen for an "error" event.  Stop the transmission if one is received.
+		_listenTo(reader, "error", function () {
+			socket.emit(_getTopicName("_done"), _wrapData({
+				id: id,
+				interrupt: true
+			}, "done"));
+			_stopListeningTo(reader, "load", loadCb);
+		});
+
+		// Do the same for the "abort" event.
+		_listenTo(reader, "abort", function () {
+			socket.emit(_getTopicName("_done"), _wrapData({
+				id: id,
+				interrupt: true
+			}, "done"));
+			_stopListeningTo(reader, "load", loadCb);
+		});
+
+		// Transmit the "start" message to the server.
+		socket.emit(_getTopicName("_start"), _wrapData({
+			name: file.name,
+			mtime: file.lastModified,
+			meta: file.meta,
+			size: file.size,
+			encoding: useText ? "text" : "octet",
+			id: id
+		}, "start"));
+
+		// To avoid a race condition, we don't want to start transmitting to the
+		// server until the server says it is ready.
+		var readyCallback = function (_newName) {
+			newName = _newName;
+			processChunk();
+		};
+		var chunkCallback = function(){
+			if ( !uploadComplete )
+				processChunk();
+		};
+		readyCallbacks[id] = readyCallback;
+		chunkCallbacks[id] = chunkCallback;
+
+		return communicator;
+	};
+
+	/**
+	 * Private function to load the file into memory using the HTML5 FileReader object
+	 * and then transmit that file through Socket.IO.
+	 *
+	 * @param  {FileList} files An array of files
+	 * @return {void}
+	 */
+	var _load = function (files) {
+		// Iterate through the array of files.
+		for (var i = 0; i < files.length; i++) {
+			// Evaluate each file in a closure, because we will need a new
+			// instance of FileReader for each file.
+			var communicator = _loadOne(files[i]);
+			communicators[communicator.id] = communicator;
+		}
+	};
+
+	/**
+	 * Private function to fetch an HTMLInputElement instance that can be used
+	 * during the file selection process.
+	 * @return {void}
+	 */
+	var _getInputElement = function () {
+		var inpt = document.getElementById(self.fileInputElementId);
+		if (!inpt) {
+			inpt = document.createElement("input");
+			inpt.setAttribute("type", "file");
+			inpt.setAttribute("id", self.fileInputElementId);
+			inpt.style.display = "none";
+			document.body.appendChild(inpt);
+		}
+		return inpt;
+	};
+
+	/**
+	 * Private function to remove an HTMLInputElement created by this instance
+	 * of SIOFU.
+	 *
+	 * @return {void}
+	 */
+	var _removeInputElement = function () {
+		var inpt = document.getElementById(self.fileInputElementId);
+		if (inpt) {
+			inpt.parentNode.removeChild(inpt);
+		}
+	};
+
+	var _baseFileSelectCallback = function (files) {
+		if (files.length === 0) return;
+
+		// Ensure existence of meta property on each file
+		for (var i = 0; i < files.length; i++) {
+			if(!files[i].meta) files[i].meta = {};
+		}
+
+		// Dispatch the "choose" event
+		var evntResult = _dispatch("choose", {
+			files: files
+		});
+
+		// If the callback didn't return false, continue with the upload
+		if (evntResult) {
+			_load(files);
+		}
+	};
+
+	/**
+	 * Private function that serves as a callback on file input.
+	 * @param  {Event} event The file input change event
+	 * @return {void}
+	 */
+	var _fileSelectCallback = function (event) {
+		var files = event.target.files || event.dataTransfer.files;
+		event.preventDefault();
+		_baseFileSelectCallback(files);
+
+		if (self.resetFileInputs) {
+			try {
+				event.target.value = ""; //for IE11, latest Chrome/Firefox/Opera...
+			} catch(err) {
+				// ignore
+			}
+			if (event.target.value) { //for IE5 ~ IE10
+				var form = document.createElement("form"),
+				parentNode = event.target.parentNode, ref = event.target.nextSibling;
+				form.appendChild(event.target);
+				form.reset();
+				parentNode.insertBefore(event.target, ref);
+			}
+		}
+	};
+
+
+	/**
+	 * Submit files at arbitrary time
+	 * @param {FileList} files Files received form the input element.
+	 * @return {void}
+	 */
+	this.submitFiles = function (files) {
+		if (files) {
+			_baseFileSelectCallback(files);
+		}
+	};
+
+	/**
+	 * Use a submitButton to upload files from the field given
+	 * @param {HTMLInputElement} submitButton the button that the user has to
+	 *                           click to start the upload
+	 * @param {HTMLInputElement} input the field with the data to upload
+	 *
+	 * @return {void}
+	 */
+	this.listenOnSubmit = function (submitButton, input) {
+		if (!input.files) return;
+		_listenTo(submitButton, "click", function () {
+			_baseFileSelectCallback(input.files);
+		}, false);
+	};
+
+	/**
+	 * Use a submitButton to upload files from the field given
+	 * @param {HTMLInputElement} submitButton the button that the user has to
+	 *                           click to start the upload
+	 * @param {Array} array an array of fields with the files to upload
+	 *
+	 * @return {void}
+	 */
+	this.listenOnArraySubmit = function (submitButton, array) {
+		for (var index in array) {
+			this.listenOnSubmit(submitButton, array[index]);
+		}
+	};
+
+	/**
+	 * Use a file input to activate this instance of the file uploader.
+	 * @param  {HTMLInputElement} inpt The input element (e.g., as returned by
+	 *                                 document.getElementById("yourId"))
+	 * @return {void}
+	 */
+	this.listenOnInput = function (inpt) {
+		if (!inpt.files) return;
+		_listenTo(inpt, "change", _fileSelectCallback, false);
+	};
+
+	/**
+	 * Accept files dropped on an element and upload them using this instance
+	 * of the file uploader.
+	 * @param  {HTMLELement} div Any HTML element.  When the user drags a file
+	 *                           or files onto this element, those files will
+	 *                           be processed by the instance.
+	 * @return {void}
+	 */
+	this.listenOnDrop = function (div) {
+		// We need to preventDefault on the dragover event in order for the
+		// drag-and-drop operation to work.
+		_listenTo(div, "dragover", function (event) {
+			event.preventDefault();
+		}, false);
+
+		_listenTo(div, "drop", _fileSelectCallback);
+	};
+
+	/**
+	 * Display a dialog box for the user to select a file.  The file will then
+	 * be uploaded using this instance of SocketIOFileUpload.
+	 *
+	 * This method works in all current browsers except Firefox, though Opera
+	 * requires that the input element be visible.
+	 *
+	 * @return {void}
+	 */
+	this.prompt = function () {
+		var inpt = _getInputElement();
+
+		// Listen for the "change" event on the file input element.
+		_listenTo(inpt, "change", _fileSelectCallback, false);
+
+		// Fire a click event on the input element.  Firefox does not allow
+		// programatic clicks on input elements, but the other browsers do.
+		// Note that Opera requires that the element be visible when "clicked".
+		var evnt = document.createEvent("MouseEvents");
+		evnt.initMouseEvent("click", true, true, window,
+			0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		inpt.dispatchEvent(evnt);
+	};
+
+	/**
+	 * Destroy an instance of Socket.IO file upload (i.e., unbind events and
+	 * relieve memory).
+	 *
+	 * IMPORTANT: To finish the memory relief process, set all external
+	 * references to this instance of SIOFU (including the reference used to
+	 * call this destroy function) to null.
+	 *
+	 * @return {void}
+	 */
+	this.destroy = function () {
+		_stopListening();
+		_removeInputElement();
+		for (var id in communicators) {
+			if (communicators.hasOwnProperty(id)) {
+				communicators[id].abort = true;
+			}
+		}
+		callbacks = null, uploadedFiles = null, readyCallbacks = null, communicators = null;
+	};
+
+	/**
+	 * Registers an event listener.  If the callback function returns false,
+	 * the file uploader will stop uploading the current file.
+	 * @param  {string}   eventName Type of event for which to listen.
+	 * @param  {Function} callback  Listener function.  Will be passed the
+	 *                              event as an argument when the event occurs.
+	 * @return {void}
+	 */
+	this.addEventListener = function (eventName, callback) {
+		if (!callbacks[eventName]) callbacks[eventName] = [];
+		callbacks[eventName].push(callback);
+	};
+
+	/**
+	 * Removes an event listener.
+	 * @param  {string}   eventName Type of event.
+	 * @param  {Function} callback  Listener function to remove.
+	 * @return {boolean}            true if callback removed; false otherwise
+	 */
+	this.removeEventListener = function (eventName, callback) {
+		if (!callbacks[eventName]) return false;
+		for (var i = 0; i < callbacks[eventName].length; i++) {
+			if (callbacks[eventName][i] === callback) {
+				callbacks[eventName].splice(i, 1);
+				return true;
+			}
+		}
+		return false;
+	};
+
+	/**
+	 * Dispatches an event into this instance's event model.
+	 * @param  {Event} evnt The event to dispatch.
+	 * @return {boolean} false if any callback returned false; true otherwise
+	 */
+	this.dispatchEvent = function (evnt) {
+		var eventCallbacks = callbacks[evnt.type];
+		if (!eventCallbacks) return true;
+		var retVal = true;
+		for (var i = 0; i < eventCallbacks.length; i++) {
+			var callbackResult = eventCallbacks[i](evnt);
+			if (callbackResult === false) {
+				retVal = false;
+			}
+		}
+		return retVal;
+	};
+
+	// OTHER LIBRARIES
+	/*
+	 * base64-arraybuffer
+	 * https://github.com/niklasvh/base64-arraybuffer
+	 *
+	 * Copyright (c) 2012 Niklas von Hertzen
+	 * Licensed under the MIT license.
+	 *
+	 * Adapted for SocketIOFileUpload.
+	 */
+	var _uint8ArrayToBase64 = function (bytes) {
+		var i, len = bytes.buffer.byteLength, base64 = "",
+			chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+		for (i = 0; i < len; i += 3) {
+			base64 += chars[bytes[i] >> 2];
+			base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+			base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+			base64 += chars[bytes[i + 2] & 63];
+		}
+
+		if ((len % 3) === 2) {
+			base64 = base64.substring(0, base64.length - 1) + "=";
+		}
+		else if (len % 3 === 1) {
+			base64 = base64.substring(0, base64.length - 2) + "==";
+		}
+
+		return base64;
+	};
+	// END OTHER LIBRARIES
+	var _chunckCallback = function(data) {
+		if ( chunkCallbacks[data.id] )
+			chunkCallbacks[data.id]();
+	};
+
+	var _readyCallback = function (data) {
+		if (readyCallbacks[data.id])
+			readyCallbacks[data.id](data.name);
+	};
+
+	var _completCallback = function (data) {
+		if (uploadedFiles[data.id]) {
+			_dispatch("complete", {
+				file: uploadedFiles[data.id],
+				detail: data.detail,
+				success: data.success
+			});
+		}
+	};
+
+	var _errorCallback = function (data) {
+		if ( uploadedFiles[data.id] ) {
+			_dispatch("error", {
+				file: uploadedFiles[data.id],
+				message: data.message,
+				code: 0
+			});
+			if (communicators) communicators[data.id].abort = true;
+		}
+	};
+
+	// CONSTRUCTOR: Listen to the "complete", "ready", and "error" messages
+	// on the socket.
+	if (_isWrapDataWellConfigured() && self.wrapData) {
+		var mapActionToCallback = {
+			chunk: _chunckCallback,
+			ready: _readyCallback,
+			complete: _completCallback,
+			error: _errorCallback
+		};
+
+		_listenTo(socket, _getTopicName(), function (message) {
+			if (typeof message !== "object") {
+				console.log("SocketIOFileUploadClient Error: You choose to wrap your data so the message from the server need to be an object"); // eslint-disable-line no-console
+				return;
+			}
+			var actionKey = self.wrapData.unwrapKey && typeof self.wrapData.unwrapKey.action === "string" ? self.wrapData.unwrapKey.action : "action";
+			var messageKey = self.wrapData.unwrapKey && typeof self.wrapData.unwrapKey.message === "string" ? self.wrapData.unwrapKey.message : "message";
+
+			var action = message[actionKey];
+			var data = message[messageKey];
+			if (!action || !data || !mapActionToCallback[action]) {
+				console.log("SocketIOFileUploadClient Error: You choose to wrap your data but the message from the server is wrong configured. Check the message and your wrapData option"); // eslint-disable-line no-console
+				return;
+			}
+			mapActionToCallback[action](data);
+		});
+	} else {
+		_listenTo(socket, _getTopicName("_chunk"), _chunckCallback);
+		_listenTo(socket, _getTopicName("_ready"), _readyCallback);
+		_listenTo(socket, _getTopicName("_complete"), _completCallback);
+		_listenTo(socket, _getTopicName("_error"), _errorCallback);
+	}
+
+	if (this.exposePrivateFunction) {
+		this.chunckCallback = _chunckCallback;
+		this.readyCallback = _readyCallback;
+		this.completCallback = _completCallback;
+		this.errorCallback = _errorCallback;
+	}
+ };
+}));
+
+},{}],2:[function(require,module,exports){
 /*!
 * sweetalert2 v11.0.18
 * Released under the MIT License.
@@ -3103,3 +3877,51 @@
 if (typeof this !== 'undefined' && this.Sweetalert2){  this.swal = this.sweetAlert = this.Swal = this.SweetAlert = this.Sweetalert2}
 
 "undefined"!=typeof document&&function(e,t){var n=e.createElement("style");if(e.getElementsByTagName("head")[0].appendChild(n),n.styleSheet)n.styleSheet.disabled||(n.styleSheet.cssText=t);else try{n.innerHTML=t}catch(e){n.innerText=t}}(document,".swal2-popup.swal2-toast{box-sizing:border-box;grid-column:1/4!important;grid-row:1/4!important;grid-template-columns:1fr 99fr 1fr;padding:1em;overflow-y:hidden;background:#fff;box-shadow:0 0 .625em #d9d9d9;pointer-events:all}.swal2-popup.swal2-toast>*{grid-column:2}.swal2-popup.swal2-toast .swal2-title{margin:1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-loading{justify-content:center}.swal2-popup.swal2-toast .swal2-input{height:2em;margin:.5em;font-size:1em}.swal2-popup.swal2-toast .swal2-validation-message{font-size:1em}.swal2-popup.swal2-toast .swal2-footer{margin:.5em 0 0;padding:.5em 0 0;font-size:.8em}.swal2-popup.swal2-toast .swal2-close{grid-column:3/3;grid-row:1/99;align-self:center;width:.8em;height:.8em;margin:0;font-size:2em}.swal2-popup.swal2-toast .swal2-html-container{margin:1em;padding:0;font-size:1em;text-align:initial}.swal2-popup.swal2-toast .swal2-html-container:empty{padding:0}.swal2-popup.swal2-toast .swal2-loader{grid-column:1;grid-row:1/99;align-self:center;width:2em;height:2em;margin:.25em}.swal2-popup.swal2-toast .swal2-icon{grid-column:1;grid-row:1/99;align-self:center;width:2em;min-width:2em;height:2em;margin:0 .5em 0 0}.swal2-popup.swal2-toast .swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:1.8em;font-weight:700}.swal2-popup.swal2-toast .swal2-icon.swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line]{top:.875em;width:1.375em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:.3125em}.swal2-popup.swal2-toast .swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:.3125em}.swal2-popup.swal2-toast .swal2-actions{justify-content:flex-start;height:auto;margin:0;margin-top:.3125em;padding:0}.swal2-popup.swal2-toast .swal2-styled{margin:.25em .5em;padding:.4em .6em;font-size:1em}.swal2-popup.swal2-toast .swal2-styled:focus{box-shadow:0 0 0 1px #fff,0 0 0 3px rgba(100,150,200,.5)}.swal2-popup.swal2-toast .swal2-success{border-color:#a5dc86}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line]{position:absolute;width:1.6em;height:3em;transform:rotate(45deg);border-radius:50%}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.8em;left:-.5em;transform:rotate(-45deg);transform-origin:2em 2em;border-radius:4em 0 0 4em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.25em;left:.9375em;transform-origin:0 1.5em;border-radius:0 4em 4em 0}.swal2-popup.swal2-toast .swal2-success .swal2-success-ring{width:2em;height:2em}.swal2-popup.swal2-toast .swal2-success .swal2-success-fix{top:0;left:.4375em;width:.4375em;height:2.6875em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line]{height:.3125em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=tip]{top:1.125em;left:.1875em;width:.75em}.swal2-popup.swal2-toast .swal2-success [class^=swal2-success-line][class$=long]{top:.9375em;right:.1875em;width:1.375em}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-toast-animate-success-line-tip .75s;animation:swal2-toast-animate-success-line-tip .75s}.swal2-popup.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-toast-animate-success-line-long .75s;animation:swal2-toast-animate-success-line-long .75s}.swal2-popup.swal2-toast.swal2-show{-webkit-animation:swal2-toast-show .5s;animation:swal2-toast-show .5s}.swal2-popup.swal2-toast.swal2-hide{-webkit-animation:swal2-toast-hide .1s forwards;animation:swal2-toast-hide .1s forwards}.swal2-container{display:grid;position:fixed;z-index:1060;top:0;right:0;bottom:0;left:0;box-sizing:border-box;grid-template-areas:\"top-start     top            top-end\" \"center-start  center         center-end\" \"bottom-start  bottom-center  bottom-end\" \"gap gap gap\";grid-template-rows:auto auto auto .625em;height:100%;padding:.625em .625em 0;overflow-x:hidden;transition:background-color .1s;-webkit-overflow-scrolling:touch}.swal2-container::after{content:\"\";grid-column:1/4;grid-row:4;height:.625em}.swal2-container.swal2-backdrop-show,.swal2-container.swal2-noanimation{background:rgba(0,0,0,.4)}.swal2-container.swal2-backdrop-hide{background:0 0!important}.swal2-container.swal2-bottom-start,.swal2-container.swal2-center-start,.swal2-container.swal2-top-start{grid-template-columns:minmax(0,1fr) auto auto}.swal2-container.swal2-bottom,.swal2-container.swal2-center,.swal2-container.swal2-top{grid-template-columns:auto minmax(0,1fr) auto}.swal2-container.swal2-bottom-end,.swal2-container.swal2-center-end,.swal2-container.swal2-top-end{grid-template-columns:auto auto minmax(0,1fr)}.swal2-container.swal2-top-start>.swal2-popup{align-self:start}.swal2-container.swal2-top>.swal2-popup{grid-column:2;align-self:start;justify-self:center}.swal2-container.swal2-top-end>.swal2-popup,.swal2-container.swal2-top-right>.swal2-popup{grid-column:3;align-self:start;justify-self:end}.swal2-container.swal2-center-left>.swal2-popup,.swal2-container.swal2-center-start>.swal2-popup{grid-row:2;align-self:center}.swal2-container.swal2-center>.swal2-popup{grid-column:2;grid-row:2;align-self:center;justify-self:center}.swal2-container.swal2-center-end>.swal2-popup,.swal2-container.swal2-center-right>.swal2-popup{grid-column:3;grid-row:2;align-self:center;justify-self:end}.swal2-container.swal2-bottom-left>.swal2-popup,.swal2-container.swal2-bottom-start>.swal2-popup{grid-column:1;grid-row:3;align-self:end}.swal2-container.swal2-bottom>.swal2-popup{grid-column:2;grid-row:3;justify-self:center;align-self:end}.swal2-container.swal2-bottom-end>.swal2-popup,.swal2-container.swal2-bottom-right>.swal2-popup{grid-column:3;grid-row:3;align-self:end;justify-self:end}.swal2-container.swal2-grow-fullscreen>.swal2-popup,.swal2-container.swal2-grow-row>.swal2-popup{grid-column:1/4;width:100%}.swal2-container.swal2-grow-column>.swal2-popup,.swal2-container.swal2-grow-fullscreen>.swal2-popup{grid-row:1/4;align-self:stretch}.swal2-container.swal2-no-transition{transition:none!important}.swal2-popup{display:none;position:relative;box-sizing:border-box;width:32em;max-width:100%;padding:0 0 1.25em;border:none;border-radius:5px;background:#fff;font-family:inherit;font-size:1rem}.swal2-popup:focus{outline:0}.swal2-popup.swal2-loading{overflow-y:hidden}.swal2-title{position:relative;max-width:100%;margin:0;padding:.8em 1em 0;color:#595959;font-size:1.875em;font-weight:600;text-align:center;text-transform:none;word-wrap:break-word}.swal2-actions{display:flex;z-index:1;box-sizing:border-box;flex-wrap:wrap;align-items:center;justify-content:center;width:100%;margin:1.25em auto 0;padding:0}.swal2-actions:not(.swal2-loading) .swal2-styled[disabled]{opacity:.4}.swal2-actions:not(.swal2-loading) .swal2-styled:hover{background-image:linear-gradient(rgba(0,0,0,.1),rgba(0,0,0,.1))}.swal2-actions:not(.swal2-loading) .swal2-styled:active{background-image:linear-gradient(rgba(0,0,0,.2),rgba(0,0,0,.2))}.swal2-loader{display:none;align-items:center;justify-content:center;width:2.2em;height:2.2em;margin:0 1.875em;-webkit-animation:swal2-rotate-loading 1.5s linear 0s infinite normal;animation:swal2-rotate-loading 1.5s linear 0s infinite normal;border-width:.25em;border-style:solid;border-radius:100%;border-color:#2778c4 transparent #2778c4 transparent}.swal2-styled{margin:.3125em;padding:.625em 1.1em;transition:box-shadow .1s;box-shadow:0 0 0 3px transparent;font-weight:500}.swal2-styled:not([disabled]){cursor:pointer}.swal2-styled.swal2-confirm{border:0;border-radius:.25em;background:initial;background-color:#7367f0;color:#fff;font-size:1em}.swal2-styled.swal2-confirm:focus{box-shadow:0 0 0 3px rgba(115,103,240,.5)}.swal2-styled.swal2-deny{border:0;border-radius:.25em;background:initial;background-color:#ea5455;color:#fff;font-size:1em}.swal2-styled.swal2-deny:focus{box-shadow:0 0 0 3px rgba(234,84,85,.5)}.swal2-styled.swal2-cancel{border:0;border-radius:.25em;background:initial;background-color:#6e7d88;color:#fff;font-size:1em}.swal2-styled.swal2-cancel:focus{box-shadow:0 0 0 3px rgba(110,125,136,.5)}.swal2-styled.swal2-default-outline:focus{box-shadow:0 0 0 3px rgba(100,150,200,.5)}.swal2-styled:focus{outline:0}.swal2-styled::-moz-focus-inner{border:0}.swal2-footer{justify-content:center;margin:1em 0 0;padding:1em 1em 0;border-top:1px solid #eee;color:#545454;font-size:1em}.swal2-timer-progress-bar-container{position:absolute;right:0;bottom:0;left:0;grid-column:auto!important;height:.25em;overflow:hidden;border-bottom-right-radius:5px;border-bottom-left-radius:5px}.swal2-timer-progress-bar{width:100%;height:.25em;background:rgba(0,0,0,.2)}.swal2-image{max-width:100%;margin:2em auto 1em}.swal2-close{z-index:2;align-items:center;justify-content:center;width:1.2em;height:1.2em;margin-top:0;margin-right:0;margin-bottom:-1.2em;padding:0;overflow:hidden;transition:color .1s,box-shadow .1s;border:none;border-radius:5px;background:0 0;color:#ccc;font-family:serif;font-family:monospace;font-size:2.5em;cursor:pointer;justify-self:end}.swal2-close:hover{transform:none;background:0 0;color:#f27474}.swal2-close:focus{outline:0;box-shadow:inset 0 0 0 3px rgba(100,150,200,.5)}.swal2-close::-moz-focus-inner{border:0}.swal2-html-container{z-index:1;justify-content:center;margin:0;padding:1em 1.6em .3em;color:#545454;font-size:1.125em;font-weight:400;line-height:normal;text-align:center;word-wrap:break-word;word-break:break-word}.swal2-checkbox,.swal2-file,.swal2-input,.swal2-radio,.swal2-select,.swal2-textarea{margin:1em 2em 0}.swal2-file,.swal2-input,.swal2-textarea{box-sizing:border-box;width:auto;transition:border-color .1s,box-shadow .1s;border:1px solid #d9d9d9;border-radius:.1875em;background:inherit;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px transparent;color:inherit;font-size:1.125em}.swal2-file.swal2-inputerror,.swal2-input.swal2-inputerror,.swal2-textarea.swal2-inputerror{border-color:#f27474!important;box-shadow:0 0 2px #f27474!important}.swal2-file:focus,.swal2-input:focus,.swal2-textarea:focus{border:1px solid #b4dbed;outline:0;box-shadow:inset 0 1px 1px rgba(0,0,0,.06),0 0 0 3px rgba(100,150,200,.5)}.swal2-file::-moz-placeholder,.swal2-input::-moz-placeholder,.swal2-textarea::-moz-placeholder{color:#ccc}.swal2-file:-ms-input-placeholder,.swal2-input:-ms-input-placeholder,.swal2-textarea:-ms-input-placeholder{color:#ccc}.swal2-file::placeholder,.swal2-input::placeholder,.swal2-textarea::placeholder{color:#ccc}.swal2-range{margin:1em 2em 0;background:#fff}.swal2-range input{width:80%}.swal2-range output{width:20%;color:inherit;font-weight:600;text-align:center}.swal2-range input,.swal2-range output{height:2.625em;padding:0;font-size:1.125em;line-height:2.625em}.swal2-input{height:2.625em;padding:0 .75em}.swal2-input[type=number]{max-width:10em}.swal2-file{width:75%;margin-right:auto;margin-left:auto;background:inherit;font-size:1.125em}.swal2-textarea{height:6.75em;padding:.75em}.swal2-select{min-width:50%;max-width:100%;padding:.375em .625em;background:inherit;color:inherit;font-size:1.125em}.swal2-checkbox,.swal2-radio{align-items:center;justify-content:center;background:#fff;color:inherit}.swal2-checkbox label,.swal2-radio label{margin:0 .6em;font-size:1.125em}.swal2-checkbox input,.swal2-radio input{flex-shrink:0;margin:0 .4em}.swal2-input-label{display:flex;justify-content:center;margin:1em auto 0}.swal2-validation-message{align-items:center;justify-content:center;margin:1em 0 0;padding:.625em;overflow:hidden;background:#f0f0f0;color:#666;font-size:1em;font-weight:300}.swal2-validation-message::before{content:\"!\";display:inline-block;width:1.5em;min-width:1.5em;height:1.5em;margin:0 .625em;border-radius:50%;background-color:#f27474;color:#fff;font-weight:600;line-height:1.5em;text-align:center}.swal2-icon{position:relative;box-sizing:content-box;justify-content:center;width:5em;height:5em;margin:2.5em auto .6em;border:.25em solid transparent;border-radius:50%;border-color:#000;font-family:inherit;line-height:5em;cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.swal2-icon .swal2-icon-content{display:flex;align-items:center;font-size:3.75em}.swal2-icon.swal2-error{border-color:#f27474;color:#f27474}.swal2-icon.swal2-error .swal2-x-mark{position:relative;flex-grow:1}.swal2-icon.swal2-error [class^=swal2-x-mark-line]{display:block;position:absolute;top:2.3125em;width:2.9375em;height:.3125em;border-radius:.125em;background-color:#f27474}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=left]{left:1.0625em;transform:rotate(45deg)}.swal2-icon.swal2-error [class^=swal2-x-mark-line][class$=right]{right:1em;transform:rotate(-45deg)}.swal2-icon.swal2-error.swal2-icon-show{-webkit-animation:swal2-animate-error-icon .5s;animation:swal2-animate-error-icon .5s}.swal2-icon.swal2-error.swal2-icon-show .swal2-x-mark{-webkit-animation:swal2-animate-error-x-mark .5s;animation:swal2-animate-error-x-mark .5s}.swal2-icon.swal2-warning{border-color:#facea8;color:#f8bb86}.swal2-icon.swal2-info{border-color:#9de0f6;color:#3fc3ee}.swal2-icon.swal2-question{border-color:#c9dae1;color:#87adbd}.swal2-icon.swal2-success{border-color:#a5dc86;color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-circular-line]{position:absolute;width:3.75em;height:7.5em;transform:rotate(45deg);border-radius:50%}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=left]{top:-.4375em;left:-2.0635em;transform:rotate(-45deg);transform-origin:3.75em 3.75em;border-radius:7.5em 0 0 7.5em}.swal2-icon.swal2-success [class^=swal2-success-circular-line][class$=right]{top:-.6875em;left:1.875em;transform:rotate(-45deg);transform-origin:0 3.75em;border-radius:0 7.5em 7.5em 0}.swal2-icon.swal2-success .swal2-success-ring{position:absolute;z-index:2;top:-.25em;left:-.25em;box-sizing:content-box;width:100%;height:100%;border:.25em solid rgba(165,220,134,.3);border-radius:50%}.swal2-icon.swal2-success .swal2-success-fix{position:absolute;z-index:1;top:.5em;left:1.625em;width:.4375em;height:5.625em;transform:rotate(-45deg)}.swal2-icon.swal2-success [class^=swal2-success-line]{display:block;position:absolute;z-index:2;height:.3125em;border-radius:.125em;background-color:#a5dc86}.swal2-icon.swal2-success [class^=swal2-success-line][class$=tip]{top:2.875em;left:.8125em;width:1.5625em;transform:rotate(45deg)}.swal2-icon.swal2-success [class^=swal2-success-line][class$=long]{top:2.375em;right:.5em;width:2.9375em;transform:rotate(-45deg)}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-tip{-webkit-animation:swal2-animate-success-line-tip .75s;animation:swal2-animate-success-line-tip .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-line-long{-webkit-animation:swal2-animate-success-line-long .75s;animation:swal2-animate-success-line-long .75s}.swal2-icon.swal2-success.swal2-icon-show .swal2-success-circular-line-right{-webkit-animation:swal2-rotate-success-circular-line 4.25s ease-in;animation:swal2-rotate-success-circular-line 4.25s ease-in}.swal2-progress-steps{flex-wrap:wrap;align-items:center;max-width:100%;margin:1.25em auto;padding:0;background:inherit;font-weight:600}.swal2-progress-steps li{display:inline-block;position:relative}.swal2-progress-steps .swal2-progress-step{z-index:20;flex-shrink:0;width:2em;height:2em;border-radius:2em;background:#2778c4;color:#fff;line-height:2em;text-align:center}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step{background:#2778c4}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step{background:#add8e6;color:#fff}.swal2-progress-steps .swal2-progress-step.swal2-active-progress-step~.swal2-progress-step-line{background:#add8e6}.swal2-progress-steps .swal2-progress-step-line{z-index:10;flex-shrink:0;width:2.5em;height:.4em;margin:0 -1px;background:#2778c4}[class^=swal2]{-webkit-tap-highlight-color:transparent}.swal2-show{-webkit-animation:swal2-show .3s;animation:swal2-show .3s}.swal2-hide{-webkit-animation:swal2-hide .15s forwards;animation:swal2-hide .15s forwards}.swal2-noanimation{transition:none}.swal2-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}.swal2-rtl .swal2-close{margin-right:initial;margin-left:0}.swal2-rtl .swal2-timer-progress-bar{right:0;left:auto}@-webkit-keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@keyframes swal2-toast-show{0%{transform:translateY(-.625em) rotateZ(2deg)}33%{transform:translateY(0) rotateZ(-2deg)}66%{transform:translateY(.3125em) rotateZ(2deg)}100%{transform:translateY(0) rotateZ(0)}}@-webkit-keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@keyframes swal2-toast-hide{100%{transform:rotateZ(1deg);opacity:0}}@-webkit-keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@keyframes swal2-toast-animate-success-line-tip{0%{top:.5625em;left:.0625em;width:0}54%{top:.125em;left:.125em;width:0}70%{top:.625em;left:-.25em;width:1.625em}84%{top:1.0625em;left:.75em;width:.5em}100%{top:1.125em;left:.1875em;width:.75em}}@-webkit-keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@keyframes swal2-toast-animate-success-line-long{0%{top:1.625em;right:1.375em;width:0}65%{top:1.25em;right:.9375em;width:0}84%{top:.9375em;right:0;width:1.125em}100%{top:.9375em;right:.1875em;width:1.375em}}@-webkit-keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@keyframes swal2-show{0%{transform:scale(.7)}45%{transform:scale(1.05)}80%{transform:scale(.95)}100%{transform:scale(1)}}@-webkit-keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@keyframes swal2-hide{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}@-webkit-keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@keyframes swal2-animate-success-line-tip{0%{top:1.1875em;left:.0625em;width:0}54%{top:1.0625em;left:.125em;width:0}70%{top:2.1875em;left:-.375em;width:3.125em}84%{top:3em;left:1.3125em;width:1.0625em}100%{top:2.8125em;left:.8125em;width:1.5625em}}@-webkit-keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@keyframes swal2-animate-success-line-long{0%{top:3.375em;right:2.875em;width:0}65%{top:3.375em;right:2.875em;width:0}84%{top:2.1875em;right:0;width:3.4375em}100%{top:2.375em;right:.5em;width:2.9375em}}@-webkit-keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@keyframes swal2-rotate-success-circular-line{0%{transform:rotate(-45deg)}5%{transform:rotate(-45deg)}12%{transform:rotate(-405deg)}100%{transform:rotate(-405deg)}}@-webkit-keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@keyframes swal2-animate-error-x-mark{0%{margin-top:1.625em;transform:scale(.4);opacity:0}50%{margin-top:1.625em;transform:scale(.4);opacity:0}80%{margin-top:-.375em;transform:scale(1.15)}100%{margin-top:0;transform:scale(1);opacity:1}}@-webkit-keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@keyframes swal2-animate-error-icon{0%{transform:rotateX(100deg);opacity:0}100%{transform:rotateX(0);opacity:1}}@-webkit-keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}@keyframes swal2-rotate-loading{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow:hidden}body.swal2-height-auto{height:auto!important}body.swal2-no-backdrop .swal2-container{background-color:transparent!important;pointer-events:none}body.swal2-no-backdrop .swal2-container .swal2-popup{pointer-events:all}body.swal2-no-backdrop .swal2-container .swal2-modal{box-shadow:0 0 10px rgba(0,0,0,.4)}@media print{body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown){overflow-y:scroll!important}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown)>[aria-hidden=true]{display:none}body.swal2-shown:not(.swal2-no-backdrop):not(.swal2-toast-shown) .swal2-container{position:static!important}}body.swal2-toast-shown .swal2-container{box-sizing:border-box;width:360px;max-width:100%;background-color:transparent;pointer-events:none}body.swal2-toast-shown .swal2-container.swal2-top{top:0;right:auto;bottom:auto;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-top-end,body.swal2-toast-shown .swal2-container.swal2-top-right{top:0;right:0;bottom:auto;left:auto}body.swal2-toast-shown .swal2-container.swal2-top-left,body.swal2-toast-shown .swal2-container.swal2-top-start{top:0;right:auto;bottom:auto;left:0}body.swal2-toast-shown .swal2-container.swal2-center-left,body.swal2-toast-shown .swal2-container.swal2-center-start{top:50%;right:auto;bottom:auto;left:0;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-center{top:50%;right:auto;bottom:auto;left:50%;transform:translate(-50%,-50%)}body.swal2-toast-shown .swal2-container.swal2-center-end,body.swal2-toast-shown .swal2-container.swal2-center-right{top:50%;right:0;bottom:auto;left:auto;transform:translateY(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-left,body.swal2-toast-shown .swal2-container.swal2-bottom-start{top:auto;right:auto;bottom:0;left:0}body.swal2-toast-shown .swal2-container.swal2-bottom{top:auto;right:auto;bottom:0;left:50%;transform:translateX(-50%)}body.swal2-toast-shown .swal2-container.swal2-bottom-end,body.swal2-toast-shown .swal2-container.swal2-bottom-right{top:auto;right:0;bottom:0;left:auto}");
+},{}],3:[function(require,module,exports){
+var socket = io();
+var SocketIOFileUpload = require("socketio-file-upload");
+const Swal = require("sweetalert2");
+
+var socket = io.connect();
+var uploader = new SocketIOFileUpload(socket);
+uploader.listenOnInput(document.getElementById("file"));
+
+console.log(uploader.useText);
+
+var messages = document.getElementById("messages");
+// var button = document.getElementById("button");
+var form = document.getElementById("form");
+var input = document.getElementById("input");
+
+(async () => {
+    const { value: formValues } = await Swal.fire({
+        title: "Welcome to Chat-Andrrff",
+        html: '<input id="swal-input1" type="username" placeholder="username" class="swal2-input">',
+        preConfirm: () => {
+            return [document.getElementById("swal-input1").value];
+        },
+    });
+    
+    console.log(
+        "Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊"
+    );
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (input.value && formValues) {
+            socket.emit("chat message", input.value, formValues[0]);
+            input.value = "";
+        }
+    });
+    
+
+    socket.on("chat message", (msg, user) => {
+        var item = document.createElement("li");
+        item.innerHTML = 
+        "<strong>"+ user +"</strong>" + ": " + msg +"</div>";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+})();
+
+
+},{"socketio-file-upload":1,"sweetalert2":2}]},{},[3]);
