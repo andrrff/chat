@@ -36,7 +36,7 @@ var input = document.getElementById("input");
 })();
 
 // files.addEventListener("onclick", file());
-function done() {
+function file() {
     (async () => {
         const { value: file } = await Swal.fire({
             title: "Select image",
@@ -55,7 +55,13 @@ function done() {
                     imageAlt: "The uploaded picture",
                 });
             };
-            reader.readAsDataURL(file);
+            // socket.on("chat message", (msg, user) => {
+            //     var item = document.createElement("li");
+            //     item.innerHTML =
+            //         "<strong>" + user + "</strong>" + ": " + reader.readAsDataURL(file); + "</div>";
+            //     messages.appendChild(item);
+            //     window.scrollTo(0, document.body.scrollHeight);
+            // });
         }
     })();
 }
