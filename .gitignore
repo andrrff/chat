@@ -1,6 +1,6 @@
 /node_modules
 /package-lock.json
 /template
-/public/js/getImagesFine.js
-/public/js/socketFine.js
+# /public/js/getImagesFine.js
+# /public/js/socketFine.js
 /tmp/
