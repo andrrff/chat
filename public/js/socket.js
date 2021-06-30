@@ -2,7 +2,7 @@
 // var router = express.Router();
 var socket = io();
 // var SocketIOFileUpload = require("socketio-file-upload");
-const Swal = require("sweetalert2"),
+const Swal = require("sweetalert2");
     // fs = require("browserify-fs"),
     // path = require("path");
 var imgChunks = [];
