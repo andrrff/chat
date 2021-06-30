@@ -27392,7 +27392,6 @@ function wrappy (fn, cb) {
 }
 
 },{}],159:[function(require,module,exports){
-(function (__dirname){(function (){
 // var express = require("express");
 // var router = express.Router();
 var socket = io();
@@ -27400,42 +27399,13 @@ var SocketIOFileUpload = require("socketio-file-upload");
 const Swal = require("sweetalert2"),
     fs = require("browserify-fs"),
     path = require("path");
+var imgChunks = [];
 
-
-const directoryPath = path.join(__dirname, "uploud/images/");
-//passsing directoryPath and callback function
-fs.readdir(directoryPath, function (err, files) {
-    //handling error
-    if (err) {
-        return console.log("Unable to scan directory: " + err);
-    }
-    //listing all files using forEach
-    files.forEach(function (file) {
-        // Do whatever you want to do with the file
-        console.log(JSON.stringify(files));
-    });
-});
-
-// const testFolder = "/public/uploud/images/";
-// console.log(values);
 
 var socket = io.connect();
-var uploader = new SocketIOFileUpload(socket);
+// var uploader = new SocketIOFileUpload(socket);
 
-
-// router
-//     .get('/', (_req, res) => {
-//         console.log(res.data);
-//     })
-
-// uploader.listenOnSubmit(
-//     document.getElementById("submit"),
-//     document.getElementById("file")
-// );
-
-// uploader.destroy();
-
-uploader.listenOnInput(document.getElementById("file"));
+// uploader.listenOnInput(document.getElementById("file"));
 
 // var button = document.getElementById("button");
 var messages = document.getElementById("messages");
@@ -27462,6 +27432,16 @@ var input = document.getElementById("input");
         }
     });
 
+    socket.on("img-chunk", function (chunk) {
+        var img = document.getElementById("img-stream2");
+        imgChunks.push(chunk);
+        img.setAttribute(
+            "src",
+            // "ola mundo"
+            "data:image/jpeg;base64," + window.btoa(imgChunks)
+        );
+    });
+
     socket.on("chat message", (msg, user) => {
         var item = document.createElement("li");
         item.innerHTML =
@@ -27471,5 +27451,4 @@ var input = document.getElementById("input");
     });
 })();
 
-}).call(this)}).call(this,"/public/js")
 },{"browserify-fs":17,"path":115,"socketio-file-upload":130,"sweetalert2":150}]},{},[159]);

@@ -3,10 +3,9 @@
     <head>
         <title>Chat Andrrff</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="styles/ui.css" />
+        <link rel="stylesheet" href="/public/styles/ui.css" />
     </head>
     <body>
-        
         <ul id="messages"></ul>
         <form id="form" action="">
             <input
@@ -14,13 +13,13 @@
                 autocomplete="off"
                 placeholder="message"
             />
-             <input id="file" type="file">
+             <input type="file" id="my-file" accept="image/*"/>
             <button id="submit">Send</button>
-            <button id="button" type="click" class="file">🚧<img src="https://img.icons8.com/fluent-systems-regular/48/000000/file.png" style="width: 24px; filter: invert(1);"/>🚧</button>
+            <!-- <button id="button" type="click" class="file">🚧<img src="https://img.icons8.com/fluent-systems-regular/48/000000/file.png" style="width: 24px; filter: invert(1);"/>🚧</button> -->
         </form>
     </body>
-    <script src="js/getImagesFine.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/public/js/getImagesFine.js"></script>
     <!-- <script src="lib/sweetalert2/sweetalert2.all.js"></script> -->
-    <script src="js/socketFine.js"></script>
+    <script src="/public/js/socketFine.js"></script>
 </html>

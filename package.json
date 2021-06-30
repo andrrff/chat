@@ -26,7 +26,6 @@
         "md5": "^2.3.0",
         "nodemon": "^2.0.7",
         "socket.io": "^4.1.2",
-        "socketio-file-upload": "^0.7.3",
         "sweetalert2": "^11.0.18"
     }
 }

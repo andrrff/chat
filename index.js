@@ -4,29 +4,14 @@ const express = require("express"),
     server = http.createServer(app),
     { Server } = require("socket.io"),
     io = new Server(server),
-    fs = require("fs"),
+    siofu = require("socketio-file-upload"),
+    fs = require('fs'),
     path = require('path');
-    siofu = require("socketio-file-upload");
 
-var values;
-const directoryPath = path.join(__dirname, "public/upload/images/");
-//passsing directoryPath and callback function
-fs.readdir(directoryPath, function (err, files) {
-    //handling error
-    if (err) {
-        return console.log("Unable to scan directory: " + err);
-    }
-    //listing all files using forEach
-    files.forEach(function (file) {
-        // Do whatever you want to do with the file
-        console.log(JSON.stringify(files));
-    });
-});
+app.use(express.static(__dirname));
 app.get("/", (_req, res) => {
     res.sendFile(__dirname + "/view/index.html");
 });
-
-// console.log(JSON.stringify(values));
 
 //Json.stringify()
 var usocket = {},
@@ -34,6 +19,23 @@ var usocket = {},
 var users = 0;
 
 io.on("connection", (socket) => {
+    socket.on("upload-image", function (message) {
+        var writer = fs.createWriteStream(
+            path.resolve(__dirname, "./tmp/" + message.name),
+            {
+                encoding: "base64",
+            }
+        );
+
+        writer.write(message.data);
+        writer.end();
+
+        writer.on("finish", function () {
+            socket.emit("image-uploaded", {
+                name: "/tmp/" + message.name,
+            });
+        });
+    });
     users++;
     console.log("User active: " + users);
     socket.on("chat message", (msg, user) => {
@@ -67,7 +69,7 @@ io.on("connection", (socket) => {
 });
 
 app.set("port", process.env.PORT || 3000);
-app.use(express.static("public"));
+// app.use(express.static("public"));
 app.use(siofu.router);
 
 server.listen(app.get("port"), function () {
