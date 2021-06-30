@@ -57,20 +57,20 @@ io.on("connection", (socket) => {
     });
 
     
-    var uploader = new siofu();
-    uploader.dir = __dirname + "/public/upload/images";
-    uploader.listen(socket);
+    // var uploader = new siofu();
+    // uploader.dir = __dirname + "/public/upload/images";
+    // uploader.listen(socket);
 
-    uploader.on("saved", function (event) {
-        // console.log(event.file);
+    // uploader.on("saved", function (event) {
+    //     // console.log(event.file);
 
-        uploader.listen(socket);
-    });
+    //     uploader.listen(socket);
+    // });
 });
 
 app.set("port", process.env.PORT || 3000);
 // app.use(express.static("public"));
-app.use(siofu.router);
+// app.use(siofu.router);
 
 server.listen(app.get("port"), function () {
     console.log("Node app is running on port", app.get("port"));
