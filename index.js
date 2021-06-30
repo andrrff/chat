@@ -4,7 +4,7 @@ const express = require("express"),
     server = http.createServer(app),
     { Server } = require("socket.io"),
     io = new Server(server),
-    siofu = require("socketio-file-upload"),
+    // siofu = require("socketio-file-upload"),
     fs = require('fs'),
     path = require('path');
 
