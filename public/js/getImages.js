@@ -53,6 +53,11 @@ socket.on("buffer", (buffer) =>
         '" style="height: 100px"/>' +
         "</div>";
     messages.appendChild(item);
+    Swal.fire({
+        title: "Olhe o que alguem mandou pra você",
+        imageUrl: "data:image/png;base64," + btoa(String.fromCharCode.apply(null, new Uint8Array(buffer))),
+        imageAlt: "The uploaded picture",
+    });
     window.scrollTo(0, document.body.scrollHeight);
     console.log("Done - ✅");
 });
