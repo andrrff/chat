@@ -24,6 +24,9 @@ body {
     border-radius: 2rem;
     margin: 0.25rem;
     resize: none;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 #input:focus {
     outline: none;
@@ -55,6 +58,9 @@ body {
 }
 #messages > li {
     padding: 0.5rem 1rem;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
 }
 #messages > li:nth-child(odd) {
     background: #efefef;
@@ -85,8 +91,14 @@ body {
         margin: 0.25rem;
         resize: none;
         font-size: large;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
     }
-    #username {
+    #messages{
+        padding-bottom: 12pc;
+    }
+    #file {
         height: 180%;
         border: none;
         padding: 0 1rem;

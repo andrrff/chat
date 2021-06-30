@@ -1,10 +1,9 @@
-// const Swal = require('sweetalert2');
 var socket = io();
 
 var messages = document.getElementById("messages");
+var files = document.getElementById("file");
 var form = document.getElementById("form");
 var input = document.getElementById("input");
-var username = document.getElementById("username");
 
 (async () => {
     const { value: formValues } = await Swal.fire({
@@ -14,7 +13,33 @@ var username = document.getElementById("username");
             return [document.getElementById("swal-input1").value];
         },
     });
-    console.log("Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊");
+    files.addEventListener("onclick",() =>{
+        (async () =>
+        {
+            const { value: file } = await Swal.fire({
+                title: "Select image",
+                input: "file",
+                inputAttributes: {
+                    "accept": "image/*",
+                    "aria-label": "Upload your profile picture",
+                },
+            });
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    Swal.fire({
+                        title: "Your uploaded picture",
+                        imageUrl: e.target.result,
+                        imageAlt: "The uploaded picture",
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        })();
+    })
+    console.log(
+        "Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊"
+    );
     form.addEventListener("submit", function (e) {
         e.preventDefault();
         if (input.value && formValues) {
@@ -23,12 +48,14 @@ var username = document.getElementById("username");
         }
     });
     
+
     socket.on("chat message", (msg, user) => {
         var item = document.createElement("li");
-        item.textContent = user + ": " + msg;
+        item.innerHTML = 
+        "<strong>"+ user +"</strong>" + ": " + msg +"</div>";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
 })();
 
-
+// files.addEventListener("onclick", file());
