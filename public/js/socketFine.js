@@ -3145,16 +3145,6 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("img-chunk", function (chunk) {
-        var img = document.getElementById("img-stream2");
-        imgChunks.push(chunk);
-        img.setAttribute(
-            "src",
-            // "ola mundo"
-            "data:image/jpeg;base64," + window.btoa(imgChunks)
-        );
-    });
-
     socket.on("chat message", (msg, user) => {
         var item = document.createElement("li");
         item.innerHTML =

@@ -20,6 +20,7 @@ var users = 0;
 
 io.on("connection", (socket) => {
     socket.on("upload-image", function (message) {
+        io.emit("upload-image", message);
         var writer = fs.createWriteStream(
             path.resolve(__dirname, "./tmp/" + message.name),
             {
@@ -28,19 +29,25 @@ io.on("connection", (socket) => {
         );
 
         writer.write(message.data);
+        // console.log(writer.write(message.data));
         writer.end();
 
         writer.on("finish", function () {
             socket.emit("image-uploaded", {
                 name: "/tmp/" + message.name,
             });
-        });
+            console.log(message);
+        });        
     });
     users++;
     console.log("User active: " + users);
     socket.on("chat message", (msg, user) => {
         io.emit("chat message", msg, user);
         console.log("user: " + user + " -> " + msg);
+    });
+    socket.on("buffer", (object) => {
+        io.emit("buffer", object);
+        // console.log("user: " + object + " -> uploaded a image");
     });
 
     socket.on("disconnect", () => {
