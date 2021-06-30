@@ -1,7 +1,7 @@
 var socket = io();
 
 var messages = document.getElementById("messages");
-var files = document.getElementById("file");
+var button = document.getElementById("button");
 var form = document.getElementById("form");
 var input = document.getElementById("input");
 
@@ -13,30 +13,7 @@ var input = document.getElementById("input");
             return [document.getElementById("swal-input1").value];
         },
     });
-    files.addEventListener("onclick",() =>{
-        (async () =>
-        {
-            const { value: file } = await Swal.fire({
-                title: "Select image",
-                input: "file",
-                inputAttributes: {
-                    "accept": "image/*",
-                    "aria-label": "Upload your profile picture",
-                },
-            });
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    Swal.fire({
-                        title: "Your uploaded picture",
-                        imageUrl: e.target.result,
-                        imageAlt: "The uploaded picture",
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-        })();
-    })
+    
     console.log(
         "Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊"
     );
@@ -59,3 +36,26 @@ var input = document.getElementById("input");
 })();
 
 // files.addEventListener("onclick", file());
+function done() {
+    (async () => {
+        const { value: file } = await Swal.fire({
+            title: "Select image",
+            input: "file",
+            inputAttributes: {
+                "accept": "image/*",
+                "aria-label": "Upload your profile picture",
+            },
+        });
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                Swal.fire({
+                    title: "Your uploaded picture",
+                    imageUrl: e.target.result,
+                    imageAlt: "The uploaded picture",
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    })();
+}

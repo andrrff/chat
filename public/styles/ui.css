@@ -32,7 +32,7 @@ body {
     outline: none;
 }
 #form > button {
-    background: #333;
+    background: #675CD8;
     border: none;
     padding: 0 1rem;
     margin: 0.25rem;
@@ -94,19 +94,21 @@ body {
         overflow-wrap: break-word;
         word-wrap: break-word;
         hyphens: auto;
+        height: 40px;
     }
     #messages{
         padding-bottom: 12pc;
     }
-    #file {
+    #button {
         height: 180%;
         border: none;
         padding: 0 1rem;
         flex-grow: 0.05;
         border-radius: 2rem;
         margin: 0.25rem;
+        height: 40px;
     }
     button{
-        height: 180%;
+        height: 40px;
     }
 }
