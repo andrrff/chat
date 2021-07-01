@@ -1,3 +1,11 @@
+var jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+const { window } = new JSDOM();
+const { document } = new JSDOM("").window;
+global.document = document;
+
+var $ = (jQuery = require("jquery")(window));
+
 const express = require("express"),
     app = express(),
     http = require("http"),
@@ -13,7 +21,8 @@ app.get("/", (_req, res) => {
     res.sendFile(__dirname + "/view/index.html");
 });
 
-var usocket = {},user = [];
+var usocket = {},
+    user = [];
 
 io.on("connection", (socket) => {
     socket.on("upload-image", function (message) {
@@ -24,24 +33,29 @@ io.on("connection", (socket) => {
                 encoding: "base64",
             }
         );
-        
-        (async () => { 
+
+        (async () => {
             sharp(message.data)
                 .rotate()
                 .resize(200)
                 .jpeg({ mozjpeg: true })
                 .toBuffer()
-                .then( data => { console.log(data); writer.write(data); })
-                .catch( err => { console.log(err) });
+                .then((data) => {
+                    console.log(data);
+                    writer.write(data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
             writer.end();
-    
+
             writer.on("finish", function () {
                 socket.emit("image-uploaded", {
                     name: "/tmp/" + message.name,
                 });
                 console.log(message);
-            });        
-        })()
+            });
+        })();
     });
     socket.on("new user", (username) => {
         if (!(username in usocket)) {
@@ -49,28 +63,36 @@ io.on("connection", (socket) => {
             usocket[username] = socket;
             user.push(username);
             socket.emit("login", user);
-            socket.broadcast.emit("user joined", username, user.length - 1);
+            // socket.broadcast.emit("user joined", username, user.length - 1);
             console.log(user);
         }
     });
-    socket.on("send private message", function (res) {
-        console.log(res);
-        if (res.recipient in usocket) {
-            usocket[res.recipient].emit("receive private message", res);
-        }
-    });
+
+    // socket.on("login", function (user) {
+    //     if (user.length >= 1) {
+    //         for (var i = 0; i < user.length; i++) {
+    //             $("ul.sidemenu").append('<li><a href="#"><i class="fa fa-user"></i><span>'+user[i] +'</span><span class="badge badge-pill badge-success">online</span></a></li>');
+    //         }
+    //     }
+    // });
+
     socket.on("chat message", (msg, user) => {
         io.emit("chat message", msg, user);
         console.log("user: " + user + " -> " + msg);
     });
     socket.on("buffer", (object) => {
         sharp(object)
-                .rotate()
-                .resize(200)
-                .jpeg({ mozjpeg: true })
-                .toBuffer()
-                .then( data => { console.log(data); io.emit("buffer", data); })
-                .catch( err => { console.log(err) });
+            .rotate()
+            .resize(200)
+            .jpeg({ mozjpeg: true })
+            .toBuffer()
+            .then((data) => {
+                console.log(data);
+                io.emit("buffer", data);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     });
 
     socket.on("disconnect", function () {

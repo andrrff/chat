@@ -1,7 +1,5 @@
 var socket = io();
 const Swal = require("sweetalert2");
-var imgChunks = [];
-
 
 var socket = io.connect();
 
@@ -26,7 +24,11 @@ var input = document.getElementById("input");
     socket.on("login", function (user) {
         if (user.length >= 1) {
             for (var i = 0; i < user.length; i++) {
-                $("ul.sidemenu").append("<li><a href=\"#\"><i class=\"fa fa-user\"></i><span>"+user[i]+"</span><span class=\"badge badge-pill badge-success\">online</span></a></li>");  
+                $("ul.sidemenu").append(
+                    '<li><a href="#"><i class="fa fa-user"></i><span>' +
+                        user[i] +
+                        '</span><span class="badge badge-pill badge-success">online</span></a></li>'
+                );
             }
         }
     });
