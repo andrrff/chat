@@ -58,14 +58,28 @@ io.on("connection", (socket) => {
         })();
     });
     socket.on("new user", (username) => {
+        socket.emit("new user", username);
         if (!(username in usocket)) {
             socket.username = username;
             usocket[username] = socket;
             user.push(username);
             socket.emit("login", user);
-            // socket.broadcast.emit("user joined", username, user.length - 1);
+            io.emit("chat message", user, undefined);
+            socket.broadcast.emit("user joined", username, user.length - 1);
             console.log(user);
         }
+    });
+
+    socket.on("login", function (user) {
+        socket.emit("login", user)
+        // console.log(user);
+        // user.forEach((element) => {
+        //     $("ul.sidemenu").append(
+        //         '<li><a href="#"><i class="fa fa-user"></i><span>' +
+        //             element +
+        //             '</span><span class="badge badge-pill badge-success">online</span></a></li>'
+        //     );
+        // });
     });
 
     // socket.on("login", function (user) {

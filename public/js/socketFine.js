@@ -3128,17 +3128,40 @@ var input = document.getElementById("input");
     );
     $("span.user-name").text(formValues[0]);
     socket.emit("new user", formValues[0]);
-    socket.on("login", function (user) {
-        if (user.length >= 1) {
-            for (var i = 0; i < user.length; i++) {
+    // socket.emit("login", user);
+
+    socket.on("login", (user) => {
+        var elements = user.toString().split(",");
+        if (elements.length >= 1) {
+            for (var i = 0; i < elements.length; i++) {
                 $("ul.sidemenu").append(
-                    '<li><a href="#"><i class="fa fa-user"></i><span>' +
-                        user[i] +
+                    '<li class="li-sidemenu ' +
+                        elements[i] +
+                        '"><a href="#"><i class="fa fa-user"></i><span>' +
+                        elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li>'
                 );
             }
         }
     });
+
+    socket.on("user joined", (user, iterator) => {
+        var elements = user.toString().split(",");
+        if (iterator >= 1) {
+            for (var i = 0; i < iterator; i++) {
+                $("ul.sidemenu").append(
+                    '<li class="li-sidemenu '+ elements[i] +'"><a href="#"><i class="fa fa-user"></i><span>' +
+                        elements[i] +
+                        '</span><span class="badge badge-pill badge-success">online</span></a></li>'
+                );
+            }
+        }
+    });
+
+    socket.on("user left", function (data) {
+        $("li.li-sidemenu").addClass(data).remove();
+    });
+
     form.addEventListener("submit", function (e) {
         // username.textContent = formValues[0];
         e.preventDefault();
