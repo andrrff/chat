@@ -31,10 +31,19 @@ socket.on("buffer", (buffer) =>
         "<strong>" +
         "@user" +
         "</strong>: " +
+        '<a href="#'+new Uint8Array(buffer)+'">' +
         '<img id="open-image" src="' +
         "data:image/png;base64," +
         btoa(String.fromCharCode.apply(null, new Uint8Array(buffer))) +
         '" style="height: 100px"/>' +
+        "</a>" +
+        '<a href="#" class="lightbox" id="'+new Uint8Array(buffer)+'">' +
+        '<span style="' +
+        "background-image: url(data:image/png;base64," +
+        btoa(String.fromCharCode.apply(null, new Uint8Array(buffer))) +
+        ')"/>' +
+        "</span>";
+        "</a>" +
         "</div>";
     messages.appendChild(item);
     Swal.fire({
