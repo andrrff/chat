@@ -52,11 +52,11 @@ socket.on("buffer", (buffer) =>
 socket.on("image-uploaded", (message) =>  {
     
     // var item = document.createElement("li");
-    Swal.fire({
-        title: "Your uploaded picture",
-        imageUrl: message.name,
-        imageAlt: "The uploaded picture",
-    });
+    // Swal.fire({
+    //     title: "Your uploaded picture",
+    //     imageUrl: message.name,
+    //     imageAlt: "The uploaded picture",
+    // });
     // item.innerHTML =
     //     "<strong>" + "@user" + "</strong>: " + "<img src=\""+ message.name + "\" style=\"height: 100px\"/>" + "</div>";
     // messages.appendChild(item);
