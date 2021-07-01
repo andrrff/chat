@@ -13,9 +13,7 @@ app.get("/", (_req, res) => {
     res.sendFile(__dirname + "/view/index.html");
 });
 
-var usocket = {},
-    user = [];
-var users = 0;
+var usocket = {},user = [];
 
 io.on("connection", (socket) => {
     socket.on("upload-image", function (message) {
@@ -45,8 +43,22 @@ io.on("connection", (socket) => {
             });        
         })()
     });
-    users++;
-    console.log("User active: " + users);
+    socket.on("new user", (username) => {
+        if (!(username in usocket)) {
+            socket.username = username;
+            usocket[username] = socket;
+            user.push(username);
+            socket.emit("login", user);
+            socket.broadcast.emit("user joined", username, user.length - 1);
+            console.log(user);
+        }
+    });
+    socket.on("send private message", function (res) {
+        console.log(res);
+        if (res.recipient in usocket) {
+            usocket[res.recipient].emit("receive private message", res);
+        }
+    });
     socket.on("chat message", (msg, user) => {
         io.emit("chat message", msg, user);
         console.log("user: " + user + " -> " + msg);
@@ -61,10 +73,13 @@ io.on("connection", (socket) => {
                 .catch( err => { console.log(err) });
     });
 
-    socket.on("disconnect", () => {
-        console.log("A user disconnected");
-        users--;
-        console.log("User active: " + users);
+    socket.on("disconnect", function () {
+        if (socket.username in usocket) {
+            delete usocket[socket.username];
+            user.splice(user.indexOf(socket.username), 1);
+        }
+        console.log(user);
+        socket.broadcast.emit("user left", socket.username);
     });
 
     socket.on("send private message", function (res) {
