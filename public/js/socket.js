@@ -1,19 +1,10 @@
-// var express = require("express");
-// var router = express.Router();
 var socket = io();
-// var SocketIOFileUpload = require("socketio-file-upload");
 const Swal = require("sweetalert2");
-    // fs = require("browserify-fs"),
-    // path = require("path");
 var imgChunks = [];
 
 
 var socket = io.connect();
-// var uploader = new SocketIOFileUpload(socket);
 
-// uploader.listenOnInput(document.getElementById("file"));
-
-// var button = document.getElementById("button");
 var messages = document.getElementById("messages");
 var form = document.getElementById("form");
 var input = document.getElementById("input");

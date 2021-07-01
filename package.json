@@ -22,9 +22,11 @@
         "browserify-fs": "^1.0.0",
         "es6-promise": "^4.2.8",
         "express": "^4.17.1",
+        "jimp": "^0.16.1",
         "jquery": "^3.6.0",
         "md5": "^2.3.0",
         "nodemon": "^2.0.7",
+        "sharp": "^0.28.3",
         "socket.io": "^4.1.2",
         "sweetalert2": "^11.0.18"
     }
