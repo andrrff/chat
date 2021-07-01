@@ -31,7 +31,7 @@ var input = document.getElementById("input");
         }
     });
     form.addEventListener("submit", function (e) {
-        username.textContent = formValues[0];
+        // username.textContent = formValues[0];
         e.preventDefault();
         if (input.value && formValues) {
             socket.emit("chat message", input.value, formValues[0]);
