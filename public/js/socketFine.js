@@ -3175,14 +3175,14 @@ var input = document.getElementById("input");
         // username.textContent = formValues[0];
         e.preventDefault();
         if (input.value && formValues) {
-            socket.emit("chat message", input.value, formValues[0], "reverse");
+            socket.emit("chat message", input.value, formValues[0], " ");
             input.value = "";
         }
     });
 
     socket.on("chat message", (msg, user, className) => {
         if(user == formValues[0])
-            className = " ";
+            className = "reverse";
        $(".chat-wrapper").append(
            '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
                msg +
