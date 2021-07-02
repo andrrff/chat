@@ -4,7 +4,7 @@ const Swal = require("sweetalert2");
 var socket = io.connect();
 
 var messages = document.getElementById("messages");
-var form = document.getElementById("form");
+var form = document.getElementById("chat");
 var input = document.getElementById("input");
 
 (async () => {
@@ -76,6 +76,7 @@ var input = document.getElementById("input");
     socket.on("chat message", (msg, user) => {
         var item = document.createElement("li");
         item.innerHTML =
+            // "<div class=\"message text-only\"><div class=\"response\"><p class=\"text\">"+msg+"</p></div></div>";
             "<strong>" + user + "</strong>" + ": " + msg + "</div>";
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
