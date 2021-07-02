@@ -65,30 +65,14 @@ io.on("connection", (socket) => {
             user.push(username);
             socket.emit("login", user);
             io.emit("chat message", user, undefined);
-            socket.broadcast.emit("user joined", username, user.length - 1);
+            socket.broadcast.emit("user joined", username);
             console.log(user);
         }
     });
 
     socket.on("login", function (user) {
         socket.emit("login", user)
-        // console.log(user);
-        // user.forEach((element) => {
-        //     $("ul.sidemenu").append(
-        //         '<li><a href="#"><i class="fa fa-user"></i><span>' +
-        //             element +
-        //             '</span><span class="badge badge-pill badge-success">online</span></a></li>'
-        //     );
-        // });
     });
-
-    // socket.on("login", function (user) {
-    //     if (user.length >= 1) {
-    //         for (var i = 0; i < user.length; i++) {
-    //             $("ul.sidemenu").append('<li><a href="#"><i class="fa fa-user"></i><span>'+user[i] +'</span><span class="badge badge-pill badge-success">online</span></a></li>');
-    //         }
-    //     }
-    // });
 
     socket.on("chat message", (msg, user) => {
         io.emit("chat message", msg, user);
@@ -114,8 +98,8 @@ io.on("connection", (socket) => {
             delete usocket[socket.username];
             user.splice(user.indexOf(socket.username), 1);
         }
-        console.log(user);
         socket.broadcast.emit("user left", socket.username);
+        console.log(user);
     });
 
     socket.on("send private message", function (res) {

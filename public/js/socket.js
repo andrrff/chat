@@ -27,12 +27,13 @@ var input = document.getElementById("input");
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
+                console.log(elements[i]);
                 $("ul.sidemenu").append(
-                    '<li class="li-sidemenu ' +
+                    '<div class="'+elements[i]+'"><li class="li-sidemenu ' +
                         elements[i] +
                         '"><a href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
-                        '</span><span class="badge badge-pill badge-success">online</span></a></li>'
+                        '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
             }
         }
@@ -40,19 +41,27 @@ var input = document.getElementById("input");
 
     socket.on("user joined", (user, iterator) => {
         var elements = user.toString().split(",");
-        if (iterator >= 1) {
-            for (var i = 0; i < iterator; i++) {
+        if (elements.length >= 1) {
+            for (var i = 0; i < elements.length; i++) {
+                console.log(elements[i]);
                 $("ul.sidemenu").append(
-                    '<li class="li-sidemenu '+ elements[i] +'"><a href="#"><i class="fa fa-user"></i><span>' +
+                    '<div class="'+elements[i]+'"><li class="li-sidemenu"><a href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
-                        '</span><span class="badge badge-pill badge-success">online</span></a></li>'
+                        '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
             }
         }
     });
 
     socket.on("user left", function (data) {
-        $("li.li-sidemenu").addClass(data).remove();
+        if(data != null)
+        {
+            // var elem = document.getElementsByClassName(data);
+            // elem.parentNode.removeChild(elem);
+            // var deleteUser = "li.li-sidemenu " + data;
+            // console.log("O usario: " + elem + " saiu");
+            $("div." + data).remove();
+        }
     });
 
     form.addEventListener("submit", function (e) {
