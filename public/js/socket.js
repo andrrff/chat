@@ -74,11 +74,16 @@ var input = document.getElementById("input");
     });
 
     socket.on("chat message", (msg, user) => {
+       $(".chat-wrapper").append(
+           '<div class="message-wrapper reverse"><div class="message-box-wrapper"><div class="message-box">' +
+               msg +
+               "</div><span>"+user+"</span></div></div>"
+       );
         var item = document.createElement("li");
         item.innerHTML =
             // "<div class=\"message text-only\"><div class=\"response\"><p class=\"text\">"+msg+"</p></div></div>";
             "<strong>" + user + "</strong>" + ": " + msg + "</div>";
-        messages.appendChild(item);
+        // messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
 })();
