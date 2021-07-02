@@ -74,8 +74,8 @@ io.on("connection", (socket) => {
         socket.emit("login", user)
     });
 
-    socket.on("chat message", (msg, user) => {
-        io.emit("chat message", msg, user);
+    socket.on("chat message", (msg, user, className) => {
+        io.emit("chat message", msg, user, className);
         console.log("user: " + user + " -> " + msg);
     });
     socket.on("buffer", (object) => {

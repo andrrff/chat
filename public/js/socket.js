@@ -68,21 +68,23 @@ var input = document.getElementById("input");
         // username.textContent = formValues[0];
         e.preventDefault();
         if (input.value && formValues) {
-            socket.emit("chat message", input.value, formValues[0]);
+            socket.emit("chat message", input.value, formValues[0], "reverse");
             input.value = "";
         }
     });
 
-    socket.on("chat message", (msg, user) => {
+    socket.on("chat message", (msg, user, className) => {
+        if(user == formValues[0])
+            className = " ";
        $(".chat-wrapper").append(
-           '<div class="message-wrapper reverse"><div class="message-box-wrapper"><div class="message-box">' +
+           '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
                msg +
                "</div><span>"+user+"</span></div></div>"
        );
-        var item = document.createElement("li");
-        item.innerHTML =
+        // var item = document.createElement("li");
+        // item.innerHTML =
             // "<div class=\"message text-only\"><div class=\"response\"><p class=\"text\">"+msg+"</p></div></div>";
-            "<strong>" + user + "</strong>" + ": " + msg + "</div>";
+            // "<strong>" + user + "</strong>" + ": " + msg + "</div>";
         // messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
