@@ -60,11 +60,12 @@ body {
     padding: 0.5rem 1rem;
     overflow-wrap: break-word;
     word-wrap: break-word;
-    background: #666666;
+    background: #3A3F48;
+    color: aliceblue;
     hyphens: auto;
 }
 #messages > li:nth-child(odd) {
-    background: #efefef;
+    background: #3A3F48;
     /* width: 200px; */
     /* position: relative; */
     /* left: 40%; */

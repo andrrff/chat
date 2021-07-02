@@ -26,6 +26,18 @@ file.addEventListener("change", () => {
 
 socket.on("buffer", (buffer) =>
 {
+    // $(".chat-wrapper").append(
+    //     '<div class="message-wrapper ' +
+    //         " " +
+    //         '"><div class="message-box-wrapper"><div class="message-box">' +
+    //         '<img id="open-image" src="' +
+    //         "data:image/png;base64," +
+    //         btoa(String.fromCharCode.apply(null, new Uint8Array(buffer))) +
+    //         '" style="height: 100px"/>' +
+    //         "</div><span>" +
+    //         "@user" +
+    //         "</span></div></div>"
+    // );
     var item = document.createElement("li");
     item.innerHTML =
         "<strong>" +
