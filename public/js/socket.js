@@ -76,10 +76,10 @@ var input = document.getElementById("input");
     socket.on("chat message", (msg, user, className) => {
         if(user == formValues[0])
             className = "reverse";
-        $("document").ready(function () {
-            const audio = new Audio("/public/sounds/Samsung notification sound effect ( no copyright)_128k.mp3");
-            audio.play();
-        });
+        // $("document").ready(function () {
+        //     const audio = new Audio("/public/sounds/Samsung notification sound effect ( no copyright)_128k.mp3");
+        //     audio.play();
+        // });
        $(".chat-wrapper").append(
            '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
                msg +
