@@ -3118,6 +3118,9 @@ var input = document.getElementById("input");
     const { value: formValues } = await Swal.fire({
         title: "Welcome to Chat-Andrrff",
         html: '<input id="swal-input1" type="username" placeholder="username" class="swal2-input">',
+        customClass: {
+            input: 'inputs',
+            },
         preConfirm: () => {
             return [document.getElementById("swal-input1").value];
         },

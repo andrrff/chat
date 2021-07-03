@@ -203,6 +203,11 @@ body {
   right: 40px;
 }
 
+/* .inputs
+{
+    width: 150px;
+} */
+
 .write-message {
   border: none !important;
     width: 60%;
