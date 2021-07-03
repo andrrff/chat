@@ -3119,8 +3119,8 @@ var input = document.getElementById("input");
         title: "Welcome to Chat-Andrrff",
         html: '<input id="swal-input1" type="username" placeholder="username" class="swal2-input">',
         customClass: {
-            input: 'inputs',
-            },
+            htmlContainer: "style='display: inline-table'",
+        },
         preConfirm: () => {
             return [document.getElementById("swal-input1").value];
         },
