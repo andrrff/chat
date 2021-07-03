@@ -384,6 +384,7 @@ body[data-theme=dark] {
 
 .chat-wrapper {
   overflow: auto;
+  margin-bottom: 65px;
 }
 
 .chat-input {
