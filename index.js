@@ -25,7 +25,7 @@ var usocket = {},
     user = [];
 
 io.on("connection", (socket) => {
-    socket.on("upload-image", function (message) {
+    socket.on("upload-image", (message) => {
         // io.emit("upload-image", message);
         var writer = fs.createWriteStream(
             path.resolve(__dirname, "./tmp/" + message.name),
@@ -49,7 +49,7 @@ io.on("connection", (socket) => {
                 });
             writer.end();
 
-            writer.on("finish", function () {
+            writer.on("finish", () => {
                 socket.emit("image-uploaded", {
                     name: "/tmp/" + message.name,
                 });
@@ -70,7 +70,7 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("login", function (user) {
+    socket.on("login", (user) => {
         socket.emit("login", user)
     });
 
@@ -78,6 +78,14 @@ io.on("connection", (socket) => {
         io.emit("chat message", msg, user, className);
         console.log("user: " + user + " -> " + msg);
     });
+
+    socket.on("send private message", (res) => {
+        console.log(res);
+        if (res.recipient in usocket) {
+            usocket[res.recipient].emit("receive private message", res);
+        }
+    });
+
     socket.on("buffer", (object) => {
         sharp(object)
             .rotate()
@@ -93,7 +101,7 @@ io.on("connection", (socket) => {
             });
     });
 
-    socket.on("disconnect", function () {
+    socket.on("disconnect", () => {
         if (socket.username in usocket) {
             delete usocket[socket.username];
             user.splice(user.indexOf(socket.username), 1);
@@ -102,7 +110,7 @@ io.on("connection", (socket) => {
         console.log(user);
     });
 
-    socket.on("send private message", function (res) {
+    socket.on("send private message", (res) => {
         console.log(res);
         if (res.recipient in usocket) {
             usocket[res.recipient].emit("receive private message", res);

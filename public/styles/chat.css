@@ -842,3 +842,12 @@ body[data-theme=dark] {
 .page-wrapper .page-content > div {
     padding: 05px 05px;
 }
+
+.active
+{
+  display: unset;
+}
+
+.desactive{
+  display: none;
+}

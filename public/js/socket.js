@@ -1,9 +1,9 @@
 var socket = io();
+const { each } = require("jquery");
 const Swal = require("sweetalert2");
 
 var socket = io.connect();
 
-var messages = document.getElementById("messages");
 var form = document.getElementById("chat");
 var input = document.getElementById("input");
 
@@ -24,13 +24,18 @@ var input = document.getElementById("input");
     );
     $("span.user-name").text(formValues[0]);
     socket.emit("new user", formValues[0]);
-    // socket.emit("login", user);
+    $("ul")
+        .each((index) => {
+                console.log("achou!!!" + index);
+            //   $(document).on("click", "div." + index, (value) => {
+            //       console.log("clicou!!!" + index);
+            //   })
+        });
 
     socket.on("login", (user) => {
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                console.log(elements[i]);
                 $("ul.sidemenu").append(
                     '<div class="'+elements[i]+'"><li class="li-sidemenu ' +
                         elements[i] +
@@ -46,7 +51,6 @@ var input = document.getElementById("input");
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                console.log(elements[i]);
                 $("ul.sidemenu").append(
                     '<div class="'+elements[i]+'"><li class="li-sidemenu"><a href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
@@ -59,16 +63,11 @@ var input = document.getElementById("input");
     socket.on("user left", function (data) {
         if(data != null)
         {
-            // var elem = document.getElementsByClassName(data);
-            // elem.parentNode.removeChild(elem);
-            // var deleteUser = "li.li-sidemenu " + data;
-            // console.log("O usario: " + elem + " saiu");
             $("div." + data).remove();
         }
     });
 
     form.addEventListener("submit", function (e) {
-        // username.textContent = formValues[0];
         e.preventDefault();
         if (input.value && formValues) {
             socket.emit("chat message", input.value, formValues[0], " ");
@@ -79,20 +78,11 @@ var input = document.getElementById("input");
     socket.on("chat message", (msg, user, className) => {
         if(user == formValues[0])
             className = "reverse";
-        // $("document").ready(function () {
-        //     const audio = new Audio("/public/sounds/Samsung notification sound effect ( no copyright)_128k.mp3");
-        //     audio.play();
-        // });
        $(".chat-wrapper").append(
            '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
                msg +
                "</div><span>"+user+"</span></div></div>"
        );
-        // var item = document.createElement("li");
-        // item.innerHTML =
-            // "<div class=\"message text-only\"><div class=\"response\"><p class=\"text\">"+msg+"</p></div></div>";
-            // "<strong>" + user + "</strong>" + ": " + msg + "</div>";
-        // messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
     });
 })();
