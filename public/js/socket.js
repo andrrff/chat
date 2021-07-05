@@ -25,6 +25,20 @@ var input = document.getElementById("input");
     );
     $("span.user-name").text(formValues[0]);
     socket.emit("new user", formValues[0]);
+    var matches = [];
+    var searchEles = document.getElementsByClassName("users").childNodes;
+    // for (var i = 0; i < searchEles.length; i++) {
+    //     if (
+    //         searchEles[i].tagName == "SELECT" ||
+    //         searchEles.tagName == "INPUT"
+    //     ) {
+    //         if (searchEles[i].id.indexOf("q1_") == 0) {
+    //             matches.push(searchEles[i]);
+    //         }
+    //     }
+    // }
+    // console.log(matches);
+    console.log(searchEles);
 
     socket.on("login", (user) => {
         var elements = user.toString().split(",");
@@ -40,6 +54,7 @@ var input = document.getElementById("input");
                 );
             }
         }
+        console.log($("div.users").children()["prevObject"]["0"]["children"]["0"].remove());
     });
 
     socket.on("user joined", (user, iterator) => {
