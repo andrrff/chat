@@ -1,5 +1,6 @@
 var socket = io();
 const { each } = require("jquery");
+const md5 = require("md5");
 const Swal = require("sweetalert2");
 
 var socket = io.connect();
@@ -24,21 +25,15 @@ var input = document.getElementById("input");
     );
     $("span.user-name").text(formValues[0]);
     socket.emit("new user", formValues[0]);
-    $("ul")
-        .each((index) => {
-                console.log("achou!!!" + index);
-            //   $(document).on("click", "div." + index, (value) => {
-            //       console.log("clicou!!!" + index);
-            //   })
-        });
 
     socket.on("login", (user) => {
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                $("ul.sidemenu").append(
-                    '<div class="'+elements[i]+'"><li class="li-sidemenu ' +
-                        elements[i] +
+                var curretUser = md5(elements[i]);
+                $("div.users").append(
+                    '<div class="'+curretUser+'"><li class="li-sidemenu ' +
+                        curretUser +
                         '"><a href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
@@ -51,8 +46,11 @@ var input = document.getElementById("input");
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                $("ul.sidemenu").append(
-                    '<div class="'+elements[i]+'"><li class="li-sidemenu"><a href="#"><i class="fa fa-user"></i><span>' +
+                var curretUser = md5(elements[i]);
+                $("div.users").append(
+                    '<div class="' +
+                        curretUser +
+                        '"><li class="li-sidemenu"><a href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
@@ -63,7 +61,7 @@ var input = document.getElementById("input");
     socket.on("user left", function (data) {
         if(data != null)
         {
-            $("div." + data).remove();
+            $("div." + md5(data)).remove();
         }
     });
 
