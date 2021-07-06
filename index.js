@@ -64,8 +64,8 @@ io.on("connection", (socket) => {
             usocket[username] = socket;
             user.push(username);
             socket.emit("login", user);
-            socket.emit("users", user, user.length);
-            socket.broadcast.emit("select_chat", user, user.length);
+            io.emit("users", user);
+            socket.broadcast.emit("select_chat", user);
             // io.emit("chat message", user, undefined);
             socket.broadcast.emit("user joined", username);
             console.log(user);

@@ -35,7 +35,7 @@ var input = document.getElementById("input");
                 $("div.users").append(
                     '<div class="'+curretUser+'"><li class="li-sidemenu ' +
                         curretUser +
-                        '"><a class="'+i+'" href="#"><i class="fa fa-user"></i><span>' +
+                        '"><a class="'+elements[i]+'" href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
@@ -51,7 +51,7 @@ var input = document.getElementById("input");
                 $("div.users").append(
                     '<div class="' +
                         curretUser +
-                        '"><li class="li-sidemenu"><a class="'+i+'" href="#"><i class="fa fa-user"></i><span>' +
+                        '"><li class="li-sidemenu"><a class="'+elements[i]+'" href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
@@ -66,15 +66,16 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("select_chat", (users, index) => {
-        console.log(users)
-        $("a").each(() => {
-            console.log($(this).text)
-        })
+    socket.on("select_chat", (users) => {
+        users.forEach((element) => {
+            $("a." + element).on("click", () => {
+                console.log("Clicou em " + element);
+            });
+        });
     });
 
-    socket.on("users", (users, index) => {
-        socket.emit("select_chat", users, index);
+    socket.on("users", (users) => {
+        socket.emit("select_chat", users);
     });
 
     form.addEventListener("submit", function (e) {
