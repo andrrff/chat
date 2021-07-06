@@ -1,6 +1,7 @@
 var socket = io();
 const { each } = require("jquery");
 const md5 = require("md5");
+const { Socket } = require("socket.io");
 const Swal = require("sweetalert2");
 
 var socket = io.connect();
@@ -25,20 +26,6 @@ var input = document.getElementById("input");
     );
     $("span.user-name").text(formValues[0]);
     socket.emit("new user", formValues[0]);
-    var matches = [];
-    var searchEles = document.getElementsByClassName("users").childNodes;
-    // for (var i = 0; i < searchEles.length; i++) {
-    //     if (
-    //         searchEles[i].tagName == "SELECT" ||
-    //         searchEles.tagName == "INPUT"
-    //     ) {
-    //         if (searchEles[i].id.indexOf("q1_") == 0) {
-    //             matches.push(searchEles[i]);
-    //         }
-    //     }
-    // }
-    // console.log(matches);
-    console.log(searchEles);
 
     socket.on("login", (user) => {
         var elements = user.toString().split(",");
@@ -48,16 +35,15 @@ var input = document.getElementById("input");
                 $("div.users").append(
                     '<div class="'+curretUser+'"><li class="li-sidemenu ' +
                         curretUser +
-                        '"><a href="#"><i class="fa fa-user"></i><span>' +
+                        '"><a class="'+elements[i]+'" href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
             }
         }
-        console.log($("div.users").children()["prevObject"]["0"]["children"]["0"].remove());
     });
 
-    socket.on("user joined", (user, iterator) => {
+    socket.on("user joined", (user) => {
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
@@ -65,7 +51,7 @@ var input = document.getElementById("input");
                 $("div.users").append(
                     '<div class="' +
                         curretUser +
-                        '"><li class="li-sidemenu"><a href="#"><i class="fa fa-user"></i><span>' +
+                        '"><li class="li-sidemenu"><a class="'+elements[i]+'" href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
@@ -78,6 +64,24 @@ var input = document.getElementById("input");
         {
             $("div." + md5(data)).remove();
         }
+    });
+
+    socket.on("select_chat", (users) => {
+        console.log(users);
+        users.forEach((element) => {
+            $("a." + element).on("click", () => {
+                console.log("Clicou em " + element);
+            });
+        });
+    });
+
+    socket.on("users", (users) => {
+        console.log(users)
+        users.forEach(element => {
+            $("a." + element).on("click", () => {
+                console.log("Clicou em " + element);
+            });
+        });
     });
 
     form.addEventListener("submit", function (e) {
