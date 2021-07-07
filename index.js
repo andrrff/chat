@@ -115,12 +115,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("send private message", (res, address) => {
-        console.log(res);
-        console.log(address);
-        if (res.recipient in usocket) {
+        // console.log(res);
+        // console.log(address);
+        // if (res.recipient in usocket) {
             // usocket[res.recipient].emit("receive private message", res);
             io.to(address).emit("receive private message", res);
-        }
+        // }
     });
 });
 

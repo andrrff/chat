@@ -70975,8 +70975,8 @@ var input = document.getElementById("input");
     socket.on("log", (anything) => {
         console.log(anything);
         socket.emit("send private message", "req", anything);
-        form.addEventListener("submit", function (e) {
-            e.preventDefault();
+        $("#chat").on("submit", (e) => {
+            console.log("submited");
             if (input.value && formValues) {
                 // socket.emit("chat message", input.value, formValues[0], " ");
                 var req = {
@@ -70986,15 +70986,16 @@ var input = document.getElementById("input");
                     "body": input.value,
                 };
                 socket.emit("send private message", req, anything);
-                req = " ";
                 input.value = "";
             }
-        });
+            e.preventDefault();
+        })
     });
 
     socket.on('receive private message', function (data) {
         console.log("Voce recebeu uma mensagem uwu")
 		var head = 'src/img/head.jpg';
+        var className = ""
 		if (data.recipient == formValues[0]) className = "reverse";
         $(".chat-wrapper").append(
             '<div class="message-wrapper ' +
