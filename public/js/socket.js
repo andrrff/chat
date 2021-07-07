@@ -70,32 +70,56 @@ var input = document.getElementById("input");
         users.forEach((element) => {
             $("a." + element).on("click", () => {
                 console.log("Clicou em " + element);
+                form.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    if (input.value && formValues) {
+                        // socket.emit("chat message", input.value, formValues[0], " ");
+                        var req = {
+                            "addresser": formValues[0],
+                            "recipient": element,
+                            "type": "plain",
+                            "body": input.value,
+                        };
+                        socket.emit("send private message", req);
+                        input.value = "";
+                    }
+                });
             });
         });
     });
 
+    socket.on('receive private message', function (data) {
+		var head = 'src/img/head.jpg';
+		if (data.recipient == formValues[0]) className = "reverse";
+        $(".chat-wrapper").append(
+            '<div class="message-wrapper ' +
+                className +
+                '"><div class="message-box-wrapper"><div class="message-box">' +
+                data.body +
+                "</div><span>" +
+                data.addresser +
+                "</span></div></div>"
+        );
+		if(document.hidden){
+            showNotice(head,data.addresser,data.body);
+		}
+        window.scrollTo(0, document.body.scrollHeight);
+	});
+
     socket.on("users", (users) => {
         socket.emit("select_chat", users);
-    });
+    });    
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        if (input.value && formValues) {
-            socket.emit("chat message", input.value, formValues[0], " ");
-            input.value = "";
-        }
-    });
-
-    socket.on("chat message", (msg, user, className) => {
-        if(user == formValues[0])
-            className = "reverse";
-       $(".chat-wrapper").append(
-           '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
-               msg +
-               "</div><span>"+user+"</span></div></div>"
-       );
-        window.scrollTo(0, document.body.scrollHeight);
-    });
+    // socket.on("chat message", (msg, user, className) => {
+    //     if(user == formValues[0])
+    //         className = "reverse";
+    //    $(".chat-wrapper").append(
+    //        '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
+    //            msg +
+    //            "</div><span>"+user+"</span></div></div>"
+    //    );
+    //     window.scrollTo(0, document.body.scrollHeight);
+    // });
 })();
 
 

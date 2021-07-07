@@ -85,13 +85,6 @@ io.on("connection", (socket) => {
         console.log("user: " + user + " -> " + msg);
     });
 
-    socket.on("send private message", (res) => {
-        console.log(res);
-        if (res.recipient in usocket) {
-            usocket[res.recipient].emit("receive private message", res);
-        }
-    });
-
     socket.on("buffer", (object) => {
         sharp(object)
             .rotate()
