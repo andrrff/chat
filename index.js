@@ -77,6 +77,10 @@ io.on("connection", (socket) => {
         socket.emit("select_chat", user);
     });
 
+    socket.on("log", (anything) => {
+        socket.emit("log", anything);
+    });
+
     socket.on("login", (user, id) => {
         socket.emit("login", user, id)
     });
