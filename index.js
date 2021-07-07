@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
             user.push(username);
             id.push(socket.id);
             socket.emit("login", user, id, username, address);
-            io.emit("users", user);
+            io.emit("users", id);
             socket.broadcast.emit("select_chat", id);
             // io.emit("chat message", user, undefined);
             socket.broadcast.emit("user joined", username, address);
@@ -112,9 +112,10 @@ io.on("connection", (socket) => {
 
     socket.on("send private message", (res, address) => {
         console.log(res);
+        console.log(address);
         if (res.recipient in usocket) {
-            usocket[res.recipient].emit("receive private message", res);
-            io.to(address).emit;
+            // usocket[res.recipient].emit("receive private message", res);
+            io.to(address).emit("receive private message", res);
         }
     });
 });

@@ -74,8 +74,8 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("select_chat", (users) => {
-        users.forEach((element) => {
+    socket.on("select_chat", (addressers) => {
+        addressers.forEach((element) => {
             $("a." + element).on("click", () => {
                 console.log("Clicou em " + element);
                 form.addEventListener("submit", function (e) {
@@ -97,6 +97,7 @@ var input = document.getElementById("input");
     });
 
     socket.on('receive private message', function (data) {
+        console.log("Voce recebeu uma mensagem uwu")
 		var head = 'src/img/head.jpg';
 		if (data.recipient == formValues[0]) className = "reverse";
         $(".chat-wrapper").append(
