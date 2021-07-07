@@ -70955,15 +70955,24 @@ var input = document.getElementById("input");
                     console.log("submited");
                     if (input.value && formValues) {
                         var req = {
-                            "addresser": socket.id,
+                            "addresser": formValues[0],
                             "recipient": element,
                             "type": "plain",
                             "body": input.value,
                         };
                         socket.emit("send private message", req, element);
-                        input.value = "";
                     }
                     e.preventDefault();
+                    var className = "reverse";
+                    $(".chat-wrapper").append(
+                        '<div class="message-wrapper ' +
+                            className +
+                            '"><div class="message-box-wrapper"><div class="message-box">' +
+                            input.value +
+                            "</div><span>" +
+                            formValues[0] +
+                            "</span></div></div>"
+                    );
                 });
             });
         });
