@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
             id.push(socket.id);
             socket.emit("login", user, id, username, address);
             io.emit("users", id);
-            socket.broadcast.emit("select_chat", id);
+            // socket.broadcast.emit("select_chat", id);
             // io.emit("chat message", user, undefined);
             socket.broadcast.emit("user joined", username, address);
             console.log(user);

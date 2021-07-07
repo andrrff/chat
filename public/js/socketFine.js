@@ -70910,16 +70910,19 @@ var input = document.getElementById("input");
         var elementsId = id.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                var currentUser = md5(elements[i]);
-                $("div.users").append(
-                    '<div class="' +
-                        currentUser +
-                        '"><li class="li-sidemenu"><a class="' +
-                        elementsId[i] +
-                        '" href="#"><i class="fa fa-user"></i><span>' +
-                        elements[i] +
-                        '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
-                );
+                if(formValues[0] != elements[i])
+                {
+                    var currentUser = md5(elements[i]);
+                    $("div.users").append(
+                        '<div class="' +
+                            currentUser +
+                            '"><li class="li-sidemenu"><a class="' +
+                            elementsId[i] +
+                            '" href="#"><i class="fa fa-user"></i><span>' +
+                            elements[i] +
+                            '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
+                    );
+                }
             }
         }
     });
@@ -70928,14 +70931,18 @@ var input = document.getElementById("input");
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                var currentUser = md5(elements[i]);
-                $("div.users").append(
-                    '<div class="' +
-                        currentUser +
-                        '"><li class="li-sidemenu"><a class="'+address+'" href="#"><i class="fa fa-user"></i><span>' +
-                        elements[i] +
-                        '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
-                );
+                if (formValues[0] != elements[i]) {
+                    var currentUser = md5(elements[i]);
+                    $("div.users").append(
+                        '<div class="' +
+                            currentUser +
+                            '"><li class="li-sidemenu"><a class="' +
+                            address +
+                            '" href="#"><i class="fa fa-user"></i><span>' +
+                            elements[i] +
+                            '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
+                    );
+                }
             }
         }
         
@@ -70951,12 +70958,12 @@ var input = document.getElementById("input");
     socket.on("select_chat", (addressers) => {
         addressers.forEach((element) => {
             $("a." + element).on("click", () => {
+                console.log(formValues[0] + " -> " + element);
                 $("#chat").on("submit", (e) => {
                     console.log("submited");
                     if (input.value && formValues) {
                         var req = {
                             "addresser": formValues[0],
-                            "recipient": element,
                             "type": "plain",
                             "body": input.value,
                         };
@@ -70973,6 +70980,7 @@ var input = document.getElementById("input");
                             formValues[0] +
                             "</span></div></div>"
                     );
+                    input.value = '';
                 });
             });
         });
@@ -70980,9 +70988,9 @@ var input = document.getElementById("input");
 
     socket.on('receive private message', function (data) {
         console.log("Voce recebeu uma mensagem uwu")
-		var head = 'src/img/head.jpg';
+        var head = 'src/img/head.jpg';
         var className = ""
-		if (data.recipient == formValues[0]) className = "reverse";
+        if (data.recipient == formValues[0]) className = "reverse";
         $(".chat-wrapper").append(
             '<div class="message-wrapper ' +
                 className +
@@ -70992,9 +71000,9 @@ var input = document.getElementById("input");
                 data.addresser +
                 "</span></div></div>"
         );
-		if(document.hidden){
+        if(document.hidden){
             showNotice(head,data.addresser,data.body);
-		}
+        }
         window.scrollTo(0, document.body.scrollHeight);
 	});
 
