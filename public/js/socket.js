@@ -77,45 +77,22 @@ var input = document.getElementById("input");
     socket.on("select_chat", (addressers) => {
         addressers.forEach((element) => {
             $("a." + element).on("click", () => {
-                // console.log("Clicou em "+ element);
-                socket.emit("log", element)
-                // console.log("Clicou em " + element);
-                // form.addEventListener("submit", function (e) {
-                //     e.preventDefault();
-                //     if (input.value && formValues) {
-                //         // socket.emit("chat message", input.value, formValues[0], " ");
-                //         var req = {
-                //             "addresser": socket.id,
-                //             "recipient": element,
-                //             "type": "plain",
-                //             "body": input.value,
-                //         };
-                //         socket.emit("send private message", req, element);
-                //         input.value = "";
-                //     }
-                // });
+                $("#chat").on("submit", (e) => {
+                    console.log("submited");
+                    if (input.value && formValues) {
+                        var req = {
+                            "addresser": socket.id,
+                            "recipient": element,
+                            "type": "plain",
+                            "body": input.value,
+                        };
+                        socket.emit("send private message", req, element);
+                        input.value = "";
+                    }
+                    e.preventDefault();
+                });
             });
         });
-    });
-
-    socket.on("log", (anything) => {
-        console.log(anything);
-        socket.emit("send private message", "req", anything);
-        $("#chat").on("submit", (e) => {
-            console.log("submited");
-            if (input.value && formValues) {
-                // socket.emit("chat message", input.value, formValues[0], " ");
-                var req = {
-                    "addresser": socket.id,
-                    "recipient": anything,
-                    "type": "plain",
-                    "body": input.value,
-                };
-                socket.emit("send private message", req, anything);
-                input.value = "";
-            }
-            e.preventDefault();
-        })
     });
 
     socket.on('receive private message', function (data) {

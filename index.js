@@ -77,10 +77,6 @@ io.on("connection", (socket) => {
         socket.emit("select_chat", user);
     });
 
-    socket.on("log", (anything) => {
-        socket.emit("log", anything);
-    });
-
     socket.on("login", (user, id) => {
         socket.emit("login", user, id)
     });
@@ -115,12 +111,8 @@ io.on("connection", (socket) => {
     });
 
     socket.on("send private message", (res, address) => {
-        // console.log(res);
-        // console.log(address);
-        // if (res.recipient in usocket) {
-            // usocket[res.recipient].emit("receive private message", res);
-            io.to(address).emit("receive private message", res);
-        // }
+        socket.emit("send private message", res, address);
+        io.to(address).emit("receive private message", res);
     });
 });
 
