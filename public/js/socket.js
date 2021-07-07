@@ -25,17 +25,24 @@ var input = document.getElementById("input");
         "Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊"
     );
     $("span.user-name").text(formValues[0]);
-    socket.emit("new user", formValues[0]);
+    socket.emit("new user", formValues[0], socket.id);
 
-    socket.on("login", (user) => {
+    socket.on("login", (user, id, username, address) => {
+        // console.log(user);
+        // console.log(id);
+        // console.log(username);
+        // console.log(address);
         var elements = user.toString().split(",");
+        var elementsId = id.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                var curretUser = md5(elements[i]);
+                var currentUser = md5(elements[i]);
                 $("div.users").append(
-                    '<div class="'+curretUser+'"><li class="li-sidemenu ' +
-                        curretUser +
-                        '"><a class="'+elements[i]+'" href="#"><i class="fa fa-user"></i><span>' +
+                    '<div class="' +
+                        currentUser +
+                        '"><li class="li-sidemenu"><a class="' +
+                        elementsId[i] +
+                        '" href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
@@ -43,20 +50,21 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("user joined", (user) => {
+    socket.on("user joined", (user, address) => {
         var elements = user.toString().split(",");
         if (elements.length >= 1) {
             for (var i = 0; i < elements.length; i++) {
-                var curretUser = md5(elements[i]);
+                var currentUser = md5(elements[i]);
                 $("div.users").append(
                     '<div class="' +
-                        curretUser +
-                        '"><li class="li-sidemenu"><a class="'+elements[i]+'" href="#"><i class="fa fa-user"></i><span>' +
+                        currentUser +
+                        '"><li class="li-sidemenu"><a class="'+address+'" href="#"><i class="fa fa-user"></i><span>' +
                         elements[i] +
                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
                 );
             }
         }
+        
     });
 
     socket.on("user left", function (data) {
@@ -75,12 +83,12 @@ var input = document.getElementById("input");
                     if (input.value && formValues) {
                         // socket.emit("chat message", input.value, formValues[0], " ");
                         var req = {
-                            "addresser": formValues[0],
+                            "addresser": socket.id,
                             "recipient": element,
                             "type": "plain",
                             "body": input.value,
                         };
-                        socket.emit("send private message", req);
+                        socket.emit("send private message", req, element);
                         input.value = "";
                     }
                 });

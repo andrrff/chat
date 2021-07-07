@@ -22,7 +22,7 @@ app.get("/", (_req, res) => {
 });
 
 var usocket = {},
-    user = [];
+    user = [], id = [];
 
 io.on("connection", (socket) => {
     socket.on("upload-image", (message) => {
@@ -57,17 +57,18 @@ io.on("connection", (socket) => {
             });
         })();
     });
-    socket.on("new user", (username) => {
-        socket.emit("new user", username);
+    socket.on("new user", (username, address) => {
+        socket.emit("new user", username, address);
         if (!(username in usocket)) {
             socket.username = username;
             usocket[username] = socket;
             user.push(username);
-            socket.emit("login", user);
+            id.push(socket.id);
+            socket.emit("login", user, id, username, address);
             io.emit("users", user);
-            socket.broadcast.emit("select_chat", user);
+            socket.broadcast.emit("select_chat", id);
             // io.emit("chat message", user, undefined);
-            socket.broadcast.emit("user joined", username);
+            socket.broadcast.emit("user joined", username, address);
             console.log(user);
         }
     });
@@ -76,8 +77,8 @@ io.on("connection", (socket) => {
         socket.emit("select_chat", user);
     });
 
-    socket.on("login", (user) => {
-        socket.emit("login", user)
+    socket.on("login", (user, id) => {
+        socket.emit("login", user, id)
     });
 
     socket.on("chat message", (msg, user, className) => {
@@ -109,10 +110,11 @@ io.on("connection", (socket) => {
         console.log(user);
     });
 
-    socket.on("send private message", (res) => {
+    socket.on("send private message", (res, address) => {
         console.log(res);
         if (res.recipient in usocket) {
             usocket[res.recipient].emit("receive private message", res);
+            io.to(address).emit;
         }
     });
 });
