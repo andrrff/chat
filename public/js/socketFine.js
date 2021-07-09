@@ -70929,6 +70929,10 @@ var input = document.getElementById("input");
         }
     });
 
+    socket.on("load messages", (res) => {
+        console.log(res);
+    });
+
     // socket.on("user joined", (user, address) => {
     //     console.log("joined");
     //     var elements = user.toString().split(",");
