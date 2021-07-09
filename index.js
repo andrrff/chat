@@ -64,11 +64,11 @@ io.on("connection", (socket) => {
             usocket[username] = socket;
             user.push(username);
             id.push(socket.id);
-            socket.emit("login", user, id, username, address);
+            io.emit("login", user, id, username, address);
             io.emit("users", id);
             // socket.broadcast.emit("select_chat", id);
             // io.emit("chat message", user, undefined);
-            socket.broadcast.emit("user joined", username, address);
+            // socket.broadcast.emit("login", username, address);
             console.log(user);
         }
     });
@@ -77,9 +77,9 @@ io.on("connection", (socket) => {
         socket.emit("select_chat", user);
     });
 
-    socket.on("login", (user, id) => {
-        socket.emit("login", user, id)
-    });
+    // socket.on("login", (user, id) => {
+        // socket.emit("login", user, id)
+    // });
 
     socket.on("chat message", (msg, user, className) => {
         io.emit("chat message", msg, user, className);

@@ -70902,10 +70902,12 @@ var input = document.getElementById("input");
     socket.emit("new user", formValues[0], socket.id);
 
     socket.on("login", (user, id, username, address) => {
+        console.log("login")
         // console.log(user);
         // console.log(id);
         // console.log(username);
         // console.log(address);
+        $("div.users").empty();
         var elements = user.toString().split(",");
         var elementsId = id.toString().split(",");
         if (elements.length >= 1) {
@@ -70927,26 +70929,27 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("user joined", (user, address) => {
-        var elements = user.toString().split(",");
-        if (elements.length >= 1) {
-            for (var i = 0; i < elements.length; i++) {
-                if (formValues[0] != elements[i]) {
-                    var currentUser = md5(elements[i]);
-                    $("div.users").append(
-                        '<div class="' +
-                            currentUser +
-                            '"><li class="li-sidemenu"><a class="' +
-                            address +
-                            '" href="#"><i class="fa fa-user"></i><span>' +
-                            elements[i] +
-                            '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
-                    );
-                }
-            }
-        }
+    // socket.on("user joined", (user, address) => {
+    //     console.log("joined");
+    //     var elements = user.toString().split(",");
+    //     if (elements.length >= 1) {
+    //         for (var i = 0; i < elements.length; i++) {
+    //             if (formValues[0] != elements[i]) {
+    //                 var currentUser = md5(elements[i]);
+    //                 $("div.users").append(
+    //                     '<div class="' +
+    //                         currentUser +
+    //                         '"><li class="li-sidemenu"><a class="' +
+    //                         address +
+    //                         '" href="#"><i class="fa fa-user"></i><span>' +
+    //                         elements[i] +
+    //                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
+    //                 );
+    //             }
+    //         }
+    //     }
         
-    });
+    // });
 
     socket.on("user left", function (data) {
         if(data != null)
