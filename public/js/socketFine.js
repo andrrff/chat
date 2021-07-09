@@ -70970,20 +70970,20 @@ var input = document.getElementById("input");
                             "type": "plain",
                             "body": input.value,
                         };
+                        var className = "reverse";
+                        $(".chat-wrapper").append(
+                            '<div class="message-wrapper ' +
+                                className +
+                                '"><div class="message-box-wrapper"><div class="message-box">' +
+                                input.value +
+                                "</div><span>" +
+                                formValues[0] +
+                                "</span></div></div>"
+                        );
+                        input.value = '';
                         socket.emit("send private message", req, element);
                     }
                     e.preventDefault();
-                    var className = "reverse";
-                    $(".chat-wrapper").append(
-                        '<div class="message-wrapper ' +
-                            className +
-                            '"><div class="message-box-wrapper"><div class="message-box">' +
-                            input.value +
-                            "</div><span>" +
-                            formValues[0] +
-                            "</span></div></div>"
-                    );
-                    input.value = '';
                 });
             });
         });
@@ -70996,7 +70996,7 @@ var input = document.getElementById("input");
         if (data.recipient == formValues[0]) className = "reverse";
         $(".chat-wrapper").append(
             '<div class="message-wrapper ' +
-                className +
+                "" +
                 '"><div class="message-box-wrapper"><div class="message-box">' +
                 data.body +
                 "</div><span>" +
