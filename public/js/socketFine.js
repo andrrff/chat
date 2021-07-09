@@ -70884,6 +70884,7 @@ var form = document.getElementById("chat");
 var input = document.getElementById("input");
 
 (async () => {
+    await Swal.fire("Informativo", "Ainda está em produção, por isso ainda tem alguns bugs à serem concertados. Muita coisa ainda falta ser implementada, mas mesmo assim obrigado pela visita ❤", "info");
     const { value: formValues } = await Swal.fire({
         title: "Welcome to Chat-Andrrff",
         html: '<input id="swal-input1" type="username" placeholder="username" class="swal2-input">',
@@ -71021,6 +71022,7 @@ var input = document.getElementById("input");
         console.log(formValues[0] + " -> Public");
         $("#chat").on("submit", (e) => {
             socket.emit("chat message", input.value, formValues[0], )
+            input.value = "";
         });
     });
 
