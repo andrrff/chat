@@ -141,15 +141,16 @@ var input = document.getElementById("input");
 
     socket.on("users", (users, username) => {
         socket.emit("select_chat", users, username);
-    });    
+    });
 
     $("a.chat-public").on("click", () => {
         console.log(formValues[0] + " -> Public");
         $("#chat").on("submit", (e) => {
             socket.emit("chat message", input.value, formValues[0], )
+            input.value = "";
         });
     });
-    
+
     socket.on("chat message", (msg, user, className) => {
         if(user == formValues[0])
             className = "reverse";
