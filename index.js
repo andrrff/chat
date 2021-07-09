@@ -22,7 +22,9 @@ app.get("/", (_req, res) => {
 });
 
 var usocket = {},
-    user = [], id = [];
+    user = [], 
+    id = [],
+    messagesData = [];
 
 io.on("connection", (socket) => {
     socket.on("upload-image", (message) => {
@@ -104,8 +106,14 @@ io.on("connection", (socket) => {
 
     socket.on("send private message", (res, address) => {
         // socket.emit("send private message", res, address);
-        console.log(res)
+        console.log(res);
+        messagesData.push(res);
+        console.log(messagesData);
         io.to(address).emit("receive private message", res);
+    });
+
+    socket.on("load messages", (res) => {
+        
     });
 });
 
