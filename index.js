@@ -26,7 +26,6 @@ var usocket = {},
 
 io.on("connection", (socket) => {
     socket.on("upload-image", (message) => {
-        // io.emit("upload-image", message);
         var writer = fs.createWriteStream(
             path.resolve(__dirname, "./tmp/" + message.name),
             {
@@ -65,21 +64,14 @@ io.on("connection", (socket) => {
             user.push(username);
             id.push(socket.id);
             io.emit("login", user, id, username, address);
-            io.emit("users", id);
-            // socket.broadcast.emit("select_chat", id);
-            // io.emit("chat message", user, undefined);
-            // socket.broadcast.emit("login", username, address);
+            io.emit("users", id, username);
             console.log(user);
         }
     });
 
-    socket.on("select_chat", (user) => {
-        socket.emit("select_chat", user);
+    socket.on("select_chat", (user, username) => {
+        socket.emit("select_chat", user, username);
     });
-
-    // socket.on("login", (user, id) => {
-        // socket.emit("login", user, id)
-    // });
 
     socket.on("chat message", (msg, user, className) => {
         io.emit("chat message", msg, user, className);
@@ -112,6 +104,7 @@ io.on("connection", (socket) => {
 
     socket.on("send private message", (res, address) => {
         // socket.emit("send private message", res, address);
+        console.log(res)
         io.to(address).emit("receive private message", res);
     });
 });

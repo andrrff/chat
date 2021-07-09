@@ -70902,7 +70902,7 @@ var input = document.getElementById("input");
     socket.emit("new user", formValues[0], socket.id);
 
     socket.on("login", (user, id, username, address) => {
-        console.log("login")
+        // console.log("login")
         // console.log(user);
         // console.log(id);
         // console.log(username);
@@ -70948,7 +70948,6 @@ var input = document.getElementById("input");
     //             }
     //         }
     //     }
-        
     // });
 
     socket.on("user left", function (data) {
@@ -70958,7 +70957,7 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("select_chat", (addressers) => {
+    socket.on("select_chat", (addressers, username) => {
         addressers.forEach((element) => {
             $("a." + element).on("click", () => {
                 console.log(formValues[0] + " -> " + element);
@@ -70967,6 +70966,7 @@ var input = document.getElementById("input");
                     if (input.value && formValues) {
                         var req = {
                             "addresser": formValues[0],
+                            "recipient": username,
                             "type": "plain",
                             "body": input.value,
                         };
@@ -71009,8 +71009,8 @@ var input = document.getElementById("input");
         window.scrollTo(0, document.body.scrollHeight);
 	});
 
-    socket.on("users", (users) => {
-        socket.emit("select_chat", users);
+    socket.on("users", (users, username) => {
+        socket.emit("select_chat", users, username);
     });    
 
     // socket.on("chat message", (msg, user, className) => {
