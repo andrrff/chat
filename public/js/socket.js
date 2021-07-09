@@ -56,7 +56,7 @@ var input = document.getElementById("input");
     });
 
     socket.on("load messages", (res) => {
-        console.log(res);
+        // console.log(res);
     });
 
     // socket.on("user joined", (user, address) => {
@@ -143,16 +143,23 @@ var input = document.getElementById("input");
         socket.emit("select_chat", users, username);
     });    
 
-    // socket.on("chat message", (msg, user, className) => {
-    //     if(user == formValues[0])
-    //         className = "reverse";
-    //    $(".chat-wrapper").append(
-    //        '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
-    //            msg +
-    //            "</div><span>"+user+"</span></div></div>"
-    //    );
-    //     window.scrollTo(0, document.body.scrollHeight);
-    // });
+    $("a.chat-public").on("click", () => {
+        console.log(formValues[0] + " -> Public");
+        $("#chat").on("submit", (e) => {
+            socket.emit("chat message", input.value, formValues[0], )
+        });
+    });
+    
+    socket.on("chat message", (msg, user, className) => {
+        if(user == formValues[0])
+            className = "reverse";
+       $(".chat-wrapper").append(
+           '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
+               msg +
+               "</div><span>"+user+"</span></div></div>"
+       );
+        window.scrollTo(0, document.body.scrollHeight);
+    });
 })();
 
 
