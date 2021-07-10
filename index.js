@@ -67,7 +67,7 @@ io.on("connection", (socket) => {
             id.push(socket.id);
             io.emit("login", user, id, username, address);
             io.emit("load messages", messagesData);
-            io.emit("users", id, username);
+            io.emit("users", id, user);
             console.log(user);
         }
     });

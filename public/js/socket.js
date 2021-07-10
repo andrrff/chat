@@ -60,27 +60,6 @@ var input = document.getElementById("input");
         // console.log(res);
     });
 
-    // socket.on("user joined", (user, address) => {
-    //     console.log("joined");
-    //     var elements = user.toString().split(",");
-    //     if (elements.length >= 1) {
-    //         for (var i = 0; i < elements.length; i++) {
-    //             if (formValues[0] != elements[i]) {
-    //                 var currentUser = md5(elements[i]);
-    //                 $("div.users").append(
-    //                     '<div class="' +
-    //                         currentUser +
-    //                         '"><li class="li-sidemenu"><a class="' +
-    //                         address +
-    //                         '" href="#"><i class="fa fa-user"></i><span>' +
-    //                         elements[i] +
-    //                         '</span><span class="badge badge-pill badge-success">online</span></a></li></div>'
-    //                 );
-    //             }
-    //         }
-    //     }
-    // });
-
     socket.on("user left", function (data) {
         if(data != null)
         {
@@ -89,15 +68,22 @@ var input = document.getElementById("input");
     });
 
     socket.on("select_chat", (addressers, username) => {
+        var sendName;
+        var elements = username.toString().split(",");
+        elements.forEach(element => {
+            $("div." + md5(element)).on("click", () => {
+                sendName = element
+            });
+        });
         addressers.forEach((element) => {
             $("a." + element).on("click", () => {
-                console.log(formValues[0] + " -> " + element);
+                // sendMessage(element, username, name_select);
                 $("#chat").on("submit", (e) => {
                     console.log("submited");
                     if (input.value && formValues) {
                         var req = {
                             "addresser": formValues[0],
-                            "recipient": username,
+                            "recipient": sendName,
                             "type": "plain",
                             "body": input.value,
                         };
@@ -163,6 +149,39 @@ var input = document.getElementById("input");
         window.scrollTo(0, document.body.scrollHeight);
     });
 })();
+
+// function sendMessage(recipient, addressers, addresser, value)
+// {
+//     // console.log("msg: " + value);
+//     addressers.forEach((element) => {
+//         // $("a." + element).on("click", () => {
+//             $("#chat").on("submit", (e) => {
+//                 console.log("submited");
+//                 if (value.value && addresser) {
+//                     var req = {
+//                         "addresser": addresser[0],
+//                         "recipient": recipient,
+//                         "type": "plain",
+//                         "body": value.value,
+//                     };
+//                     var className = "reverse";
+//                     $(".chat-wrapper").append(
+//                         '<div class="message-wrapper ' +
+//                             className +
+//                             '"><div class="message-box-wrapper"><div class="message-box">' +
+//                             value.value +
+//                             "</div><span>" +
+//                             addresser[0] +
+//                             "</span></div></div>"
+//                     );
+//                     input.value = "";
+//                     socket.emit("send private message", req, element);
+//                 }
+//                 e.preventDefault();
+//             });
+//         // });
+//     });
+// }
 
 
 function showNotice(head,title,msg){
