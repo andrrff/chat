@@ -70880,7 +70880,7 @@ const Swal = require("sweetalert2");
 
 var socket = io.connect();
 
-var form = document.getElementById("chat");
+var button = document.getElementById("submit");
 var input = document.getElementById("input");
 
 (async () => {
@@ -70936,35 +70936,38 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("select_chat", (addressers, recipient, index) => {
-            // $("#chat").on("submit", (e) => {
-                console.log("submited");
-                if (input.value && formValues) {
-                    var req = {
-                        "addresser": formValues[0],
-                        "recipient": recipient,
-                        "type": "plain",
-                        "body": input.value,
-                    };
-                    var className = "reverse";
-                    $(".chat-wrapper").append(
-                        '<div class="message-wrapper ' +
-                            className +
-                            '"><div class="message-box-wrapper"><div class="message-box">' +
-                            input.value +
-                            "</div><span>" +
-                            formValues[0] +
-                            "</span></div></div>"
-                    );
-                    // socket.emit("send private message", req, addressers[index]);
-                    // socket.emit("log", req, addressers[index]);
-                }
-            // });
-        socket.emit("log", req, addressers[index]);
-        input.value = '';
-        console.log(addressers);
-        console.log(addressers[index]);
-    });
+    // $("#submit").on("click", () => {
+        socket.on("select_chat", (addressers, recipient, index) => {
+                // $("#chat").on("submit", (e) => {
+                    console.log("submited");
+                    if (input.value && formValues) {
+                        var req = {
+                            "addresser": formValues[0],
+                            "recipient": recipient,
+                            "type": "plain",
+                            "body": input.value,
+                        };
+                        var className = "reverse";
+                        $(".chat-wrapper").append(
+                            '<div class="message-wrapper ' +
+                                className +
+                                '"><div class="message-box-wrapper"><div class="message-box">' +
+                                input.value +
+                                "</div><span>" +
+                                formValues[0] +
+                                "</span></div></div>"
+                        );
+                        // socket.emit("send private message", req, addressers[index]);
+                        // socket.emit("log", req, addressers[index]);
+                        socket.emit("log", req, addressers[index]);
+                    }
+                // });
+            input.value = '';
+            console.log(addressers);
+            console.log(addressers[index]);
+        });
+    // });
+
 
     socket.on('receive private message', function (data) {
         console.log("Voce recebeu uma mensagem uwu")
@@ -70991,11 +70994,13 @@ var input = document.getElementById("input");
         var elements = username.toString().split(",");
         elements.forEach((element, index) => {
             $("div." + md5(element)).on("click", () => {
-                sendName = element;
-                console.log("Clicou em " + sendName)
-                $("#submit").on("click", () => {
-                    socket.emit("select_chat", users, sendName, index);
-                })
+                // $("#submit").on("click", () => {
+                    sendName = element;
+                    console.log("Clicou em " + sendName)
+                    // });
+                    button.onclick = () => {
+                        socket.emit("select_chat", users, sendName, index);
+                    };
             });
         });
     });

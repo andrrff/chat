@@ -110,7 +110,9 @@ io.on("connection", (socket) => {
         console.log(res);
         messagesData.push(res);
         console.log(messagesData);
-        io.to(address).emit("receive private message", res);
+        // $("#submit").on("click", () => {
+            io.to(address).emit("receive private message", res);
+        // });
     });
 
     socket.on("log", (message, address) => {
