@@ -63,12 +63,7 @@ var input = document.getElementById("input");
     });
 
     socket.on("select_chat", (addressers, recipient, index) => {
-        addressers.forEach((element) => {
-            // $("a." + element).on("click", () => {
-                // sendMessage(element, username, name_select);
-                // });
-            });
-            $("#chat").on("submit", (e) => {
+            // $("#chat").on("submit", (e) => {
                 console.log("submited");
                 if (input.value && formValues) {
                     var req = {
@@ -87,15 +82,14 @@ var input = document.getElementById("input");
                             formValues[0] +
                             "</span></div></div>"
                     );
-                    input.value = '';
                     // socket.emit("send private message", req, addressers[index]);
                     // socket.emit("log", req, addressers[index]);
                 }
-                e.preventDefault();
-            });
+            // });
+        socket.emit("log", req, addressers[index]);
+        input.value = '';
         console.log(addressers);
         console.log(addressers[index]);
-        socket.emit("log", formValues[0], addressers[index]);
     });
 
     socket.on('receive private message', function (data) {
@@ -125,13 +119,24 @@ var input = document.getElementById("input");
             $("div." + md5(element)).on("click", () => {
                 sendName = element;
                 console.log("Clicou em " + sendName)
-                socket.emit("select_chat", users, sendName, index);
+                $("#submit").on("click", () => {
+                    socket.emit("select_chat", users, sendName, index);
+                })
             });
         });
     });
 
     socket.on("selected", (message) => {
         console.log("Voce foi selecionado " + message)
+        $(".chat-wrapper").append(
+            '<div class="message-wrapper ' +
+                "" +
+                '"><div class="message-box-wrapper"><div class="message-box">' +
+                message.body +
+                "</div><span>" +
+                message.addresser+
+                "</span></div></div>"
+        );
     })
 
     $("a.chat-public").on("click", () => {
