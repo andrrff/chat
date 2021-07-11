@@ -70940,32 +70940,33 @@ var input = document.getElementById("input");
         addressers.forEach((element) => {
             // $("a." + element).on("click", () => {
                 // sendMessage(element, username, name_select);
-                $("#chat").on("submit", (e) => {
-                    console.log("submited");
-                    if (input.value && formValues) {
-                        var req = {
-                            "addresser": formValues[0],
-                            "recipient": recipient,
-                            "type": "plain",
-                            "body": input.value,
-                        };
-                        var className = "reverse";
-                        $(".chat-wrapper").append(
-                            '<div class="message-wrapper ' +
-                                className +
-                                '"><div class="message-box-wrapper"><div class="message-box">' +
-                                input.value +
-                                "</div><span>" +
-                                formValues[0] +
-                                "</span></div></div>"
-                        );
-                        input.value = '';
-                        socket.emit("send private message", req, element);
-                    }
-                    e.preventDefault();
-                });
-            // });
-        });
+                // });
+            });
+            $("#chat").on("submit", (e) => {
+                console.log("submited");
+                if (input.value && formValues) {
+                    var req = {
+                        "addresser": formValues[0],
+                        "recipient": recipient,
+                        "type": "plain",
+                        "body": input.value,
+                    };
+                    var className = "reverse";
+                    $(".chat-wrapper").append(
+                        '<div class="message-wrapper ' +
+                            className +
+                            '"><div class="message-box-wrapper"><div class="message-box">' +
+                            input.value +
+                            "</div><span>" +
+                            formValues[0] +
+                            "</span></div></div>"
+                    );
+                    input.value = '';
+                    // socket.emit("send private message", req, addressers[index]);
+                    // socket.emit("log", req, addressers[index]);
+                }
+                e.preventDefault();
+            });
         console.log(addressers);
         console.log(addressers[index]);
         socket.emit("log", formValues[0], addressers[index]);

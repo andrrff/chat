@@ -116,6 +116,7 @@ io.on("connection", (socket) => {
     socket.on("log", (message, address) => {
         console.log(message);
         io.to(address).emit("selected", message);
+        // io.to(address).emit("receive private message", message);
     })
 });
 
