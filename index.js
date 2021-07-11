@@ -65,15 +65,15 @@ io.on("connection", (socket) => {
             usocket[username] = socket;
             user.push(username);
             id.push(socket.id);
-            io.emit("login", user, id, username, address);
+            io.emit("login", user, id);
             io.emit("load messages", messagesData);
             io.emit("users", id, user);
             console.log(user);
         }
     });
 
-    socket.on("select_chat", (user, username) => {
-        socket.emit("select_chat", user, username);
+    socket.on("select_chat", (user, username, index) => {
+        socket.emit("select_chat", user, username, index);
     });
 
     socket.on("chat message", (msg, user, className) => {
@@ -112,6 +112,11 @@ io.on("connection", (socket) => {
         console.log(messagesData);
         io.to(address).emit("receive private message", res);
     });
+
+    socket.on("log", (message, address) => {
+        console.log(message);
+        io.to(address).emit("selected", message);
+    })
 });
 
 app.set("port", process.env.PORT || 3000);

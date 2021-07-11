@@ -28,12 +28,7 @@ var input = document.getElementById("input");
     $("span.user-name").text(formValues[0]);
     socket.emit("new user", formValues[0], socket.id);
 
-    socket.on("login", (user, id, username, address) => {
-        // console.log("login")
-        // console.log(user);
-        // console.log(id);
-        // console.log(username);
-        // console.log(address);
+    socket.on("login", (user, id) => {
         $("div.users").empty();
         var elements = user.toString().split(",");
         var elementsId = id.toString().split(",");
@@ -67,23 +62,16 @@ var input = document.getElementById("input");
         }
     });
 
-    socket.on("select_chat", (addressers, username) => {
-        var sendName;
-        var elements = username.toString().split(",");
-        elements.forEach(element => {
-            $("div." + md5(element)).on("click", () => {
-                sendName = element
-            });
-        });
+    socket.on("select_chat", (addressers, recipient, index) => {
         addressers.forEach((element) => {
-            $("a." + element).on("click", () => {
+            // $("a." + element).on("click", () => {
                 // sendMessage(element, username, name_select);
                 $("#chat").on("submit", (e) => {
                     console.log("submited");
                     if (input.value && formValues) {
                         var req = {
                             "addresser": formValues[0],
-                            "recipient": sendName,
+                            "recipient": recipient,
                             "type": "plain",
                             "body": input.value,
                         };
@@ -102,8 +90,11 @@ var input = document.getElementById("input");
                     }
                     e.preventDefault();
                 });
-            });
+            // });
         });
+        console.log(addressers);
+        console.log(addressers[index]);
+        socket.emit("log", formValues[0], addressers[index]);
     });
 
     socket.on('receive private message', function (data) {
@@ -127,8 +118,20 @@ var input = document.getElementById("input");
 	});
 
     socket.on("users", (users, username) => {
-        socket.emit("select_chat", users, username);
+        var sendName;
+        var elements = username.toString().split(",");
+        elements.forEach((element, index) => {
+            $("div." + md5(element)).on("click", () => {
+                sendName = element;
+                console.log("Clicou em " + sendName)
+                socket.emit("select_chat", users, sendName, index);
+            });
+        });
     });
+
+    socket.on("selected", (message) => {
+        console.log("Voce foi selecionado " + message)
+    })
 
     $("a.chat-public").on("click", () => {
         console.log(formValues[0] + " -> Public");
