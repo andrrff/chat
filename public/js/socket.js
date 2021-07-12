@@ -70,11 +70,11 @@ var input = document.getElementById("input");
                 "type": "plain",
                 "body": input.value,
             };
-            var className = "reverse";
+            // var className = "reverse";
             $(".chat-wrapper").append(
                 '<div class="message-wrapper-reverse"><div class="message-box-wrapper"><div class="message-box">' +
                     input.value +
-                    "</div><span>" +
+                    "</div><span class=\""+recipient+"\">" +
                     formValues[0] + " -> " + recipient +
                     "</span></div></div>"
             );
@@ -89,9 +89,8 @@ var input = document.getElementById("input");
         console.log("Voce recebeu uma mensagem uwu")
         var head = 'src/img/head.jpg';
         $(".chat-wrapper").append(
-            '<div class="message-wrapper ' +
-                data.addresser +
-                '"><div class="message-box-wrapper"><div class="message-box">' +
+            '<div class="message-wrapper"' +
+                '><div class="message-box-wrapper"><div class="message-box">' +
                 data.body +
                 "</div><span class='userAddresser'>" +
                 data.addresser +
@@ -110,17 +109,14 @@ var input = document.getElementById("input");
             $("div." + md5(element)).on("click", () => {
                     sendName = element;
                     console.log("Clicou em " + sendName)
-                    // console.log($("div.message-wrapper").find("span").text());
-                    // if (element == $("div.message-wrapper").find("span").text())
-                    //     console.log("Existe uma mensagem de " + element);
                     $("div.message-wrapper").find("span").each((index, el) => {
                         if(element != el.textContent)
                         {
-                            $(".chat-wrapper")[0]["children"][
-                                index
-                            ].hidden = true;
+                            // $(".chat-wrapper")[0]["children"][
+                            //     index
+                            // ].hidden = true;
                             // console.log(el.textContent)
-                            // console.log(index)
+                            console.log(index)
                         }
                         else
                         {
