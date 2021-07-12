@@ -70954,7 +70954,7 @@ var input = document.getElementById("input");
                                 '"><div class="message-box-wrapper"><div class="message-box">' +
                                 input.value +
                                 "</div><span>" +
-                                formValues[0] +
+                                formValues[0] + " -> " + recipient +
                                 "</span></div></div>"
                         );
                         // socket.emit("send private message", req, addressers[index]);
@@ -71001,31 +71001,13 @@ var input = document.getElementById("input");
                     button.onclick = () => {
                         socket.emit("select_chat", users, sendName, index);
                     };
-                    window.addEventListener(
-                        "keydown",
-                        function (event) {
-                            // if (event.defaultPrevented) {
-                            //     return; // Should do nothing if the default action has been cancelled
-                            // }
-
-                            // var handled = false;
-                            if (event.key == 'Enter') {
-                                // Handle the event with KeyboardEvent.keyCode and set handled true.
-                                socket.emit(
-                                    "select_chat",
-                                    users,
-                                    sendName,
-                                    index
-                                );
-                            }
-
-                            // if (handled) {
-                            //     // Suppress "double action" if event handled
-                            //     event.preventDefault();
-                            // }
-                        },
-                        true
-                    );
+            });
+            $("a.chat-public").on("click", () => {
+                console.log(formValues[0] + " -> Public");
+                button.onclick = () => {
+                    socket.emit("chat message", input.value, formValues[0], "");
+                };
+                input.value = "";
             });
         });
     });
@@ -71042,14 +71024,6 @@ var input = document.getElementById("input");
                 "</span></div></div>"
         );
     })
-
-    $("a.chat-public").on("click", () => {
-        console.log(formValues[0] + " -> Public");
-        $("#chat").on("submit", (e) => {
-            socket.emit("chat message", input.value, formValues[0], )
-            input.value = "";
-        });
-    });
 
     socket.on("chat message", (msg, user, className) => {
         if(user == formValues[0])
