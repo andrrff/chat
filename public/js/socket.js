@@ -72,9 +72,7 @@ var input = document.getElementById("input");
             };
             var className = "reverse";
             $(".chat-wrapper").append(
-                '<div class="message-wrapper ' +
-                    className +
-                    '"><div class="message-box-wrapper"><div class="message-box">' +
+                '<div class="message-wrapper-reverse"><div class="message-box-wrapper"><div class="message-box">' +
                     input.value +
                     "</div><span>" +
                     formValues[0] + " -> " + recipient +
@@ -82,7 +80,7 @@ var input = document.getElementById("input");
             );
             socket.emit("log", req, addressers[index]);
         }
-        // input.value = '';
+        input.value = '';
         console.log(addressers);
         console.log(addressers[index]);
     });
@@ -115,22 +113,22 @@ var input = document.getElementById("input");
                     // console.log($("div.message-wrapper").find("span").text());
                     // if (element == $("div.message-wrapper").find("span").text())
                     //     console.log("Existe uma mensagem de " + element);
-                    // $("div.message-wrapper").find("span").each((index, el) => {
-                    //     if(element != el.textContent)
-                    //     {
-                    //         $(".chat-wrapper")[0]["children"][
-                    //             index
-                    //         ].hidden = true;
-                    //         // console.log(el.textContent)
-                    //         // console.log(index)
-                    //     }
-                    //     else
-                    //     {
-                    //         $(".chat-wrapper")[0]["children"][
-                    //             index
-                    //         ].hidden = false;
-                    //     }
-                    // });
+                    $("div.message-wrapper").find("span").each((index, el) => {
+                        if(element != el.textContent)
+                        {
+                            $(".chat-wrapper")[0]["children"][
+                                index
+                            ].hidden = true;
+                            // console.log(el.textContent)
+                            // console.log(index)
+                        }
+                        else
+                        {
+                            $(".chat-wrapper")[0]["children"][
+                                index
+                            ].hidden = false;
+                        }
+                    });
                     // if( element != )
                     // console.log($("#columns-name").attr("class").attr("class"));
                     $("#usernameNav").text(element);

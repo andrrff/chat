@@ -1,5 +1,5 @@
 var socket = io();
-var Swal = require("sweetalert2");
+const Swal = require("sweetalert2");
 
 var file = document.getElementById("my-file");
 var messages = document.getElementById("messages");

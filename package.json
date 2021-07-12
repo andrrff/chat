@@ -18,8 +18,8 @@
     },
     "homepage": "https://github.com/andrrff/chat#readme",
     "dependencies": {
+        "@sweetalert2/theme-dark": "^5.0.1",
         "browserify": "^17.0.0",
-        "browserify-fs": "^1.0.0",
         "es6-promise": "^4.2.8",
         "express": "^4.17.1",
         "jimp": "^0.16.1",

@@ -70946,9 +70946,7 @@ var input = document.getElementById("input");
             };
             var className = "reverse";
             $(".chat-wrapper").append(
-                '<div class="message-wrapper ' +
-                    className +
-                    '"><div class="message-box-wrapper"><div class="message-box">' +
+                '<div class="message-wrapper-reverse"><div class="message-box-wrapper"><div class="message-box">' +
                     input.value +
                     "</div><span>" +
                     formValues[0] + " -> " + recipient +
@@ -70989,14 +70987,14 @@ var input = document.getElementById("input");
                     // console.log($("div.message-wrapper").find("span").text());
                     // if (element == $("div.message-wrapper").find("span").text())
                     //     console.log("Existe uma mensagem de " + element);
-                    $("div.message-wrapper reverse").find("span").each((index, el) => {
+                    $("div.message-wrapper").find("span").each((index, el) => {
                         if(element != el.textContent)
                         {
                             $(".chat-wrapper")[0]["children"][
                                 index
                             ].hidden = true;
-                            console.log(el.textContent)
-                            console.log(index)
+                            // console.log(el.textContent)
+                            // console.log(index)
                         }
                         else
                         {
