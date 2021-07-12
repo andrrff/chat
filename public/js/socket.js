@@ -63,7 +63,6 @@ var input = document.getElementById("input");
     });
 
     socket.on("select_chat", (addressers, recipient, index) => {
-        console.log("submited");
         if (input.value && formValues) {
             var req = {
                 "addresser": formValues[0],
@@ -83,7 +82,7 @@ var input = document.getElementById("input");
             );
             socket.emit("log", req, addressers[index]);
         }
-        input.value = '';
+        // input.value = '';
         console.log(addressers);
         console.log(addressers[index]);
     });
@@ -93,10 +92,10 @@ var input = document.getElementById("input");
         var head = 'src/img/head.jpg';
         $(".chat-wrapper").append(
             '<div class="message-wrapper ' +
-                "" +
+                data.addresser +
                 '"><div class="message-box-wrapper"><div class="message-box">' +
                 data.body +
-                "</div><span>" +
+                "</div><span class='userAddresser'>" +
                 data.addresser +
                 "</span></div></div>"
         );
@@ -113,6 +112,27 @@ var input = document.getElementById("input");
             $("div." + md5(element)).on("click", () => {
                     sendName = element;
                     console.log("Clicou em " + sendName)
+                    // console.log($("div.message-wrapper").find("span").text());
+                    // if (element == $("div.message-wrapper").find("span").text())
+                    //     console.log("Existe uma mensagem de " + element);
+                    // $("div.message-wrapper").find("span").each((index, el) => {
+                    //     if(element != el.textContent)
+                    //     {
+                    //         $(".chat-wrapper")[0]["children"][
+                    //             index
+                    //         ].hidden = true;
+                    //         // console.log(el.textContent)
+                    //         // console.log(index)
+                    //     }
+                    //     else
+                    //     {
+                    //         $(".chat-wrapper")[0]["children"][
+                    //             index
+                    //         ].hidden = false;
+                    //     }
+                    // });
+                    // if( element != )
+                    // console.log($("#columns-name").attr("class").attr("class"));
                     $("#usernameNav").text(element);
                     button.onclick = () => {
                         socket.emit("select_chat", users, sendName, index);
