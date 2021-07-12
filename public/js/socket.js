@@ -62,44 +62,35 @@ var input = document.getElementById("input");
         }
     });
 
-    // $("#submit").on("click", () => {
-        socket.on("select_chat", (addressers, recipient, index) => {
-                // $("#chat").on("submit", (e) => {
-                    console.log("submited");
-                    if (input.value && formValues) {
-                        var req = {
-                            "addresser": formValues[0],
-                            "recipient": recipient,
-                            "type": "plain",
-                            "body": input.value,
-                        };
-                        var className = "reverse";
-                        $(".chat-wrapper").append(
-                            '<div class="message-wrapper ' +
-                                className +
-                                '"><div class="message-box-wrapper"><div class="message-box">' +
-                                input.value +
-                                "</div><span>" +
-                                formValues[0] + " -> " + recipient +
-                                "</span></div></div>"
-                        );
-                        // socket.emit("send private message", req, addressers[index]);
-                        // socket.emit("log", req, addressers[index]);
-                        socket.emit("log", req, addressers[index]);
-                    }
-                // });
-            input.value = '';
-            console.log(addressers);
-            console.log(addressers[index]);
-        });
-    // });
-
+    socket.on("select_chat", (addressers, recipient, index) => {
+        console.log("submited");
+        if (input.value && formValues) {
+            var req = {
+                "addresser": formValues[0],
+                "recipient": recipient,
+                "type": "plain",
+                "body": input.value,
+            };
+            var className = "reverse";
+            $(".chat-wrapper").append(
+                '<div class="message-wrapper ' +
+                    className +
+                    '"><div class="message-box-wrapper"><div class="message-box">' +
+                    input.value +
+                    "</div><span>" +
+                    formValues[0] + " -> " + recipient +
+                    "</span></div></div>"
+            );
+            socket.emit("log", req, addressers[index]);
+        }
+        input.value = '';
+        console.log(addressers);
+        console.log(addressers[index]);
+    });
 
     socket.on('receive private message', function (data) {
         console.log("Voce recebeu uma mensagem uwu")
         var head = 'src/img/head.jpg';
-        var className = ""
-        if (data.recipient == formValues[0]) className = "reverse";
         $(".chat-wrapper").append(
             '<div class="message-wrapper ' +
                 "" +
@@ -120,16 +111,16 @@ var input = document.getElementById("input");
         var elements = username.toString().split(",");
         elements.forEach((element, index) => {
             $("div." + md5(element)).on("click", () => {
-                // $("#submit").on("click", () => {
                     sendName = element;
                     console.log("Clicou em " + sendName)
-                    // });
+                    $("#usernameNav").text(element);
                     button.onclick = () => {
                         socket.emit("select_chat", users, sendName, index);
                     };
             });
             $("a.chat-public").on("click", () => {
                 console.log(formValues[0] + " -> Public");
+                $("#usernameNav").text("Public");
                 button.onclick = () => {
                     socket.emit("chat message", input.value, formValues[0], "");
                 };
@@ -158,82 +149,50 @@ var input = document.getElementById("input");
            '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
                msg +
                "</div><span>"+user+"</span></div></div>"
-       );
+        );
+        input.value = "";
         window.scrollTo(0, document.body.scrollHeight);
     });
 })();
 
-// function sendMessage(recipient, addressers, addresser, value)
-// {
-//     // console.log("msg: " + value);
-//     addressers.forEach((element) => {
-//         // $("a." + element).on("click", () => {
-//             $("#chat").on("submit", (e) => {
-//                 console.log("submited");
-//                 if (value.value && addresser) {
-//                     var req = {
-//                         "addresser": addresser[0],
-//                         "recipient": recipient,
-//                         "type": "plain",
-//                         "body": value.value,
-//                     };
-//                     var className = "reverse";
-//                     $(".chat-wrapper").append(
-//                         '<div class="message-wrapper ' +
-//                             className +
-//                             '"><div class="message-box-wrapper"><div class="message-box">' +
-//                             value.value +
-//                             "</div><span>" +
-//                             addresser[0] +
-//                             "</span></div></div>"
-//                     );
-//                     input.value = "";
-//                     socket.emit("send private message", req, element);
-//                 }
-//                 e.preventDefault();
-//             });
-//         // });
-//     });
-// }
 
-
-function showNotice(head,title,msg){
-    var Notification = window.Notification || window.mozNotification || window.webkitNotification;
-    if(Notification){
-        Notification.requestPermission(function(status){
-            //status默认值'default'等同于拒绝 'denied' 意味着用户不想要通知 'granted' 意味着用户同意启用通知
-            if("granted" != status){
-                return;
-            }else{
-                var tag = "sds"+Math.random();
-                var notify = new Notification(
-                    title,
-                    {
-                        dir:'auto',
-                        lang:'zh-CN',
-                        tag:tag,//实例化的notification的id
-                        icon:'/'+head,//通知的缩略图,//icon 支持ico、png、jpg、jpeg格式
-                        body:msg //通知的具体内容
-                    }
-                );
-                notify.onclick=function(){
-                    //如果通知消息被点击,通知窗口将被激活
-                    window.focus();
-                },
-                notify.onerror = function () {
-                    console.log("HTML5桌面消息出错！！！");
-                };
-                notify.onshow = function () {
-                    setTimeout(function(){
-                        notify.close();
-                    },2000)
-                };
-                notify.onclose = function () {
-                    console.log("HTML5桌面消息关闭！！！");
-                };
-            }
-        });
-    }else{
-        console.log("您的浏览器不支持桌面消息");
-    }
-};
+// function showNotice(head,title,msg){
+//     var Notification = window.Notification || window.mozNotification || window.webkitNotification;
+//     if(Notification){
+//         Notification.requestPermission(function(status){
+//             //status默认值'default'等同于拒绝 'denied' 意味着用户不想要通知 'granted' 意味着用户同意启用通知
+//             if("granted" != status){
+//                 return;
+//             }else{
+//                 var tag = "sds"+Math.random();
+//                 var notify = new Notification(
+//                     title,
+//                     {
+//                         dir:'auto',
+//                         lang:'zh-CN',
+//                         tag:tag,//实例化的notification的id
+//                         icon:'/'+head,//通知的缩略图,//icon 支持ico、png、jpg、jpeg格式
+//                         body:msg //通知的具体内容
+//                     }
+//                 );
+//                 notify.onclick=function(){
+//                     //如果通知消息被点击,通知窗口将被激活
+//                     window.focus();
+//                 },
+//                 notify.onerror = function () {
+//                     console.log("HTML5桌面消息出错！！！");
+//                 };
+//                 notify.onshow = function () {
+//                     setTimeout(function(){
+//                         notify.close();
+//                     },2000)
+//                 };
+//                 notify.onclose = function () {
+//                     console.log("HTML5桌面消息关闭！！！");
+//                 };
+//             }
+//         });
+//     }else{
+//         console.log("您的浏览器不支持桌面消息");
+//     }
+// };

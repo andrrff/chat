@@ -166,9 +166,10 @@ body {
     align-items: center;
     position: fixed;
     bottom: 0;
-    background-color: #495057d4;
+    background-color: #3e424a82;
     backdrop-filter: blur(4px);
     border-top: 2px solid #5c616d;
+    border-top: 1.6px solid #3A3F48;
 }
 #footer-chat:focus {
     outline: none;

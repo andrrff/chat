@@ -10,6 +10,12 @@
         <link rel="stylesheet" href="/public/styles/chat.css" />
     </head>
     <body>
+      <nav class="navbar navbar-light bg-light" style="background-color: #31353d !important; border-bottom: 1.6px solid #3A3F48; position: fixed;
+    width: 100%;">
+        <div class="container-fluid" style="justify-content: center;">
+          <span class="navbar-brand mb-0 h1" id="usernameNav" style="color:#A8AFBD">Selecione um chat</span>
+        </div>
+      </nav>
     <div class="page-wrapper chiller-theme">
   <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
     <i class="fas fa-bars"></i>
@@ -97,57 +103,13 @@
       <ul id="messages"></ul>
     <div class="chat-wrapper">
       
-    <!-- <div class="chat-input-wrapper">
-      <button class="chat-attachment-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-paperclip" viewBox="0 0 24 24">
-          <defs></defs>
-          <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"></path>
-        </svg>
-      </button>
-      <div class="input-wrapper">
-        <input type="text" class="chat-input" placeholder="Enter your message here">
-        <button class="emoji-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="feather feather-smile" viewBox="0 0 24 24">
-          <defs></defs>
-          <circle cx="12" cy="12" r="10"></circle>
-          <path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"></path>
-        </svg>
-      </button>
-      </div>
-      <button class="chat-send-btn">Send</button>
-    </div> -->
   </div>
-    <!-- <div class="messages-chat"></div> -->
-        <!-- <form id="form" action=""> -->
-            <!-- <div class="sidebar-search">
-                <div>
-                <div class="input-group">
-                    <input id="input" type="text" class="form-control search-menu" placeholder="Message...">
-                    <div class="input-group-append">
-                    <span class="input-group-text">
-                        <i class="fa fa-paper-plane" aria-hidden="true"></i>
-                    </span>
-                    </div>
-                </div>
-                </div>
-            </div> -->
-            <!-- <input
-                id="input"
-                autocomplete="off"
-                placeholder="message"
-            /> -->
-             <!-- <input type="file" id="my-file" accept="image/*"/> -->
-            <!-- <button id="submit">Send</button> -->
-            <!-- <button id="button" type="click" class="file">🚧<img src="https://img.icons8.com/fluent-systems-regular/48/000000/file.png" style="width: 24px; filter: invert(1);"/>🚧</button> -->
-        <!-- </form> -->
-        <!-- <form id="chat" action=""> -->
+    
             <div class="footer-chat">
               <label for="my-file">
                 <i class="icon fas fa-paperclip clickable" style="filter:invert(0); font-size:25pt; margin-left: 10px;" aria-hidden="true"></i>
               </label>
               <input type="file" id="my-file" name="my-file" accept="image/*"/>
-            <!-- <a class="paperclip">
-            </a> -->
               <input id="input" autocomplete="off" class="write-message" style="outline: none;" placeholder="Type your message here"></input>
               <button id="submit" style="background-color: #f0f8ff00; outline: none;
     border: none;">
