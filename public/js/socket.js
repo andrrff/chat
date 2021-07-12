@@ -80,7 +80,7 @@ var input = document.getElementById("input");
                                 '"><div class="message-box-wrapper"><div class="message-box">' +
                                 input.value +
                                 "</div><span>" +
-                                formValues[0] +
+                                formValues[0] + " -> " + recipient +
                                 "</span></div></div>"
                         );
                         // socket.emit("send private message", req, addressers[index]);
@@ -127,6 +127,31 @@ var input = document.getElementById("input");
                     button.onclick = () => {
                         socket.emit("select_chat", users, sendName, index);
                     };
+                    // window.addEventListener(
+                    //     "keydown",
+                    //     function (event) {
+                    //         // if (event.defaultPrevented) {
+                    //         //     return; // Should do nothing if the default action has been cancelled
+                    //         // }
+
+                    //         // var handled = false;
+                    //         if (event.key == 'Enter') {
+                    //             // Handle the event with KeyboardEvent.keyCode and set handled true.
+                    //             socket.emit(
+                    //                 "select_chat",
+                    //                 users,
+                    //                 sendName,
+                    //                 index
+                    //             );
+                    //         }
+
+                    //         // if (handled) {
+                    //         //     // Suppress "double action" if event handled
+                    //         //     event.preventDefault();
+                    //         // }
+                    //     },
+                    //     true
+                    // );
             });
         });
     });
