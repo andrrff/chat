@@ -70949,7 +70949,7 @@ var input = document.getElementById("input");
                 '<div class="message-wrapper reverse"><div class="message-box-wrapper"><div class="message-box">' +
                     input.value +
                     "</div><span class=\""+recipient+"\">" +
-                    formValues[0] + " -> " + recipient +
+                    formValues[0] +
                     "</span></div></div>"
             );
             socket.emit("log", req, addressers[index]);
@@ -70983,18 +70983,14 @@ var input = document.getElementById("input");
             $("div." + md5(element)).on("click", () => {
                     sendName = element;
                     console.log("Clicou em " + sendName)
-                    // $(".chat-wrapper").find("div").each((index, el) => {
-                    //     console.log(index)
-                    //     console.log(el)
-                    // })
                     $("div.message-wrapper").find("span").each((index, el) => {
                         if (element != el.textContent && el.className === "") {
                             $(".chat-wrapper")[0]["children"][
                                 index
                             ].hidden = true;
                             // console.log(el.textContent)
-                            console.log("Diferentes: " + index);
-                            console.log(el.className !== "");
+                            // console.log("Diferentes: " + index);
+                            // console.log(el.className !== "");
                         } else {
                             if(element === el.className)
                             {
@@ -71014,8 +71010,8 @@ var input = document.getElementById("input");
                                     index
                                 ].hidden = true;
                             }
-                            console.log("Iguais: " + index);
-                            console.log(el.className !== "");
+                            // console.log("Iguais: " + index);
+                            // console.log(el.className !== "");
                         }
                     });
                     // if( element != )
@@ -71026,12 +71022,25 @@ var input = document.getElementById("input");
                     };
             });
             $("a.chat-public").on("click", () => {
-                console.log(formValues[0] + " -> Public");
+                // console.log(formValues[0] + " -> Public");
                 $("#usernameNav").text("Public");
+                $("div.message-wrapper").find("span").each((index, el) => {
+                    if (el.className !== "public") {
+                            $(".chat-wrapper")[0]["children"][
+                                index
+                            ].hidden = true;
+                            // console.log(el);
+                    } else {
+                        // console.log(el)
+                        $(".chat-wrapper")[0]["children"][
+                            index
+                        ].hidden = false;
+                    }
+                })
                 button.onclick = () => {
                     socket.emit("chat message", input.value, formValues[0], "");
+                    input.value = "";
                 };
-                input.value = "";
             });
         });
     });
@@ -71040,7 +71049,6 @@ var input = document.getElementById("input");
         console.log("Voce foi selecionado " + message)
         $(".chat-wrapper").append(
             '<div class="message-wrapper ' +
-                "" +
                 '"><div class="message-box-wrapper"><div class="message-box">' +
                 message.body +
                 "</div><span>" +
@@ -71053,10 +71061,14 @@ var input = document.getElementById("input");
         if(user == formValues[0])
             className = "reverse";
        $(".chat-wrapper").append(
-           '<div class="message-wrapper '+className+'"><div class="message-box-wrapper"><div class="message-box">' +
+           '<div class="message-wrapper ' +
+               className +
+               '"><div class="message-box-wrapper"><div class="message-box">' +
                msg +
-               "</div><span>"+user+"</span></div></div>"
-        );
+               '</div><span class="public">' +
+               user +
+               "</span></div></div>"
+       );
         input.value = "";
         window.scrollTo(0, document.body.scrollHeight);
     });
