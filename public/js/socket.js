@@ -72,7 +72,7 @@ var input = document.getElementById("input");
             };
             // var className = "reverse";
             $(".chat-wrapper").append(
-                '<div class="message-wrapper-reverse"><div class="message-box-wrapper"><div class="message-box">' +
+                '<div class="message-wrapper reverse"><div class="message-box-wrapper"><div class="message-box">' +
                     input.value +
                     "</div><span class=\""+recipient+"\">" +
                     formValues[0] + " -> " + recipient +
@@ -109,20 +109,39 @@ var input = document.getElementById("input");
             $("div." + md5(element)).on("click", () => {
                     sendName = element;
                     console.log("Clicou em " + sendName)
+                    // $(".chat-wrapper").find("div").each((index, el) => {
+                    //     console.log(index)
+                    //     console.log(el)
+                    // })
                     $("div.message-wrapper").find("span").each((index, el) => {
-                        if(element != el.textContent)
-                        {
-                            // $(".chat-wrapper")[0]["children"][
-                            //     index
-                            // ].hidden = true;
-                            // console.log(el.textContent)
-                            console.log(index)
-                        }
-                        else
-                        {
+                        if (element != el.textContent && el.className === "") {
                             $(".chat-wrapper")[0]["children"][
                                 index
-                            ].hidden = false;
+                            ].hidden = true;
+                            // console.log(el.textContent)
+                            console.log("Diferentes: " + index);
+                            console.log(el.className !== "");
+                        } else {
+                            if(element === el.className)
+                            {
+                                $(".chat-wrapper")[0]["children"][
+                                    index
+                                ].hidden = false;
+                            }
+                            else if(el.className === "")
+                            {
+                                $(".chat-wrapper")[0]["children"][
+                                    index
+                                ].hidden = false;
+                            }
+                            else
+                            {
+                                $(".chat-wrapper")[0]["children"][
+                                    index
+                                ].hidden = true;
+                            }
+                            console.log("Iguais: " + index);
+                            console.log(el.className !== "");
                         }
                     });
                     // if( element != )

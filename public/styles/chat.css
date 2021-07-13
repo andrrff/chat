@@ -465,29 +465,21 @@ body[data-theme=dark] {
   align-items: flex-start;
   padding-bottom: 20px;
 }
-
-.message-wrapper-reverse {
-  display: flex;
-  align-items: flex-start;
-  padding-bottom: 20px;
+.message-wrapper.reverse {
   justify-content: flex-end;
 }
-
-/* .message-wrapper.reverse {
-} */
-.message-wrapper-reverse .message-box {
+.message-wrapper.reverse .message-box {
   background-color: #818896;
   color: #fff;
 }
-.message-wrapper-reverse .message-box-wrapper {
+.message-wrapper.reverse .message-box-wrapper {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
-.message-wrapper-reverse .message-pp {
+.message-wrapper.reverse .message-pp {
   order: 2;
 }
-
 
 .message-pp {
   width: 40px;
