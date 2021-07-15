@@ -21,9 +21,7 @@ var input = document.getElementById("input");
         },
     });
 
-    console.log(
-        "Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊"
-    );
+    console.log("Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊");
     $("span.user-name").text(formValues[0]);
     socket.emit("new user", formValues[0], socket.id);
 
@@ -57,6 +55,7 @@ var input = document.getElementById("input");
                 "recipient": recipient,
                 "type": "plain",
                 "body": input.value,
+                "time": new Date()
             };
             // var className = "reverse";
             $(".chat-wrapper").append(
@@ -69,8 +68,8 @@ var input = document.getElementById("input");
             socket.emit("send message private", req, addressers[index]);
         }
         input.value = '';
-        console.log(addressers);
-        console.log(addressers[index]);
+        console.log("Avaliables users: ", addressers);
+        console.log("Send message to [id]: ", addressers[index]);
     });
 
     socket.on("load messages", (res) => {
