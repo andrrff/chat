@@ -70970,9 +70970,9 @@ var input = document.getElementById("input");
                 data.addresser +
                 "</span></div></div>"
         );
-        if(document.hidden){
-            showNotice(head,data.addresser,data.body);
-        }
+        // if(document.hidden){
+        //     showNotice(head,data.addresser,data.body);
+        // }
         window.scrollTo(0, document.body.scrollHeight);
 	});
 
@@ -71069,6 +71069,9 @@ var input = document.getElementById("input");
                user +
                "</span></div></div>"
        );
+    //    if (document.hidden) {
+    //        showNotice("head", user, msg);
+    //    }
         input.value = "";
         window.scrollTo(0, document.body.scrollHeight);
     });
@@ -71088,7 +71091,7 @@ var input = document.getElementById("input");
 //                     title,
 //                     {
 //                         dir:'auto',
-//                         lang:'zh-CN',
+//                         lang:'pt-BR',
 //                         tag:tag,//实例化的notification的id
 //                         icon:'/'+head,//通知的缩略图,//icon 支持ico、png、jpg、jpeg格式
 //                         body:msg //通知的具体内容
@@ -71099,7 +71102,7 @@ var input = document.getElementById("input");
 //                     window.focus();
 //                 },
 //                 notify.onerror = function () {
-//                     console.log("HTML5桌面消息出错！！！");
+//                     // console.log("HTML5桌面消息出错！！！");
 //                 };
 //                 notify.onshow = function () {
 //                     setTimeout(function(){
@@ -71107,12 +71110,25 @@ var input = document.getElementById("input");
 //                     },2000)
 //                 };
 //                 notify.onclose = function () {
-//                     console.log("HTML5桌面消息关闭！！！");
+//                     // console.log("HTML5桌面消息关闭！！！");
 //                 };
 //             }
 //         });
 //     }else{
-//         console.log("您的浏览器不支持桌面消息");
+//         // console.log("您的浏览器不支持桌面消息");
 //     }
 // };
+
+// const constraints = {
+//     "video": true,
+//     "audio": true,
+// };
+// navigator.mediaDevices
+//     .getUserMedia(constraints)
+//     .then((stream) => {
+//         console.log("Got MediaStream:", stream);
+//     })
+//     .catch((error) => {
+//         console.error("Error accessing media devices.", error);
+//     });
 },{"jquery":186,"md5":188,"socket.io":259,"sweetalert2":306}]},{},[317]);

@@ -96,9 +96,9 @@ var input = document.getElementById("input");
                 data.addresser +
                 "</span></div></div>"
         );
-        if(document.hidden){
-            showNotice(head,data.addresser,data.body);
-        }
+        // if(document.hidden){
+        //     showNotice(head,data.addresser,data.body);
+        // }
         window.scrollTo(0, document.body.scrollHeight);
 	});
 
@@ -107,6 +107,7 @@ var input = document.getElementById("input");
         var elements = username.toString().split(",");
         elements.forEach((element, index) => {
             $("div." + md5(element)).on("click", () => {
+                window.scrollTo(0, document.body.scrollHeight);
                     sendName = element;
                     console.log("Clicou em " + sendName)
                     $("div.message-wrapper").find("span").each((index, el) => {
@@ -144,6 +145,7 @@ var input = document.getElementById("input");
                     // console.log($("#columns-name").attr("class").attr("class"));
                     $("#usernameNav").text(element);
                     button.onclick = () => {
+                        window.scrollTo(0, document.body.scrollHeight);
                         socket.emit("select_chat", users, sendName, index);
                     };
             });
@@ -173,6 +175,7 @@ var input = document.getElementById("input");
 
     socket.on("selected", (message) => {
         console.log("Voce foi selecionado " + message)
+        window.scrollTo(0, document.body.scrollHeight);
         $(".chat-wrapper").append(
             '<div class="message-wrapper ' +
                 '"><div class="message-box-wrapper"><div class="message-box">' +
@@ -195,6 +198,9 @@ var input = document.getElementById("input");
                user +
                "</span></div></div>"
        );
+    //    if (document.hidden) {
+    //        showNotice("head", user, msg);
+    //    }
         input.value = "";
         window.scrollTo(0, document.body.scrollHeight);
     });
@@ -214,7 +220,7 @@ var input = document.getElementById("input");
 //                     title,
 //                     {
 //                         dir:'auto',
-//                         lang:'zh-CN',
+//                         lang:'pt-BR',
 //                         tag:tag,//实例化的notification的id
 //                         icon:'/'+head,//通知的缩略图,//icon 支持ico、png、jpg、jpeg格式
 //                         body:msg //通知的具体内容
@@ -225,7 +231,7 @@ var input = document.getElementById("input");
 //                     window.focus();
 //                 },
 //                 notify.onerror = function () {
-//                     console.log("HTML5桌面消息出错！！！");
+//                     // console.log("HTML5桌面消息出错！！！");
 //                 };
 //                 notify.onshow = function () {
 //                     setTimeout(function(){
@@ -233,11 +239,24 @@ var input = document.getElementById("input");
 //                     },2000)
 //                 };
 //                 notify.onclose = function () {
-//                     console.log("HTML5桌面消息关闭！！！");
+//                     // console.log("HTML5桌面消息关闭！！！");
 //                 };
 //             }
 //         });
 //     }else{
-//         console.log("您的浏览器不支持桌面消息");
+//         // console.log("您的浏览器不支持桌面消息");
 //     }
 // };
+
+// const constraints = {
+//     "video": true,
+//     "audio": true,
+// };
+// navigator.mediaDevices
+//     .getUserMedia(constraints)
+//     .then((stream) => {
+//         console.log("Got MediaStream:", stream);
+//     })
+//     .catch((error) => {
+//         console.error("Error accessing media devices.", error);
+//     });
