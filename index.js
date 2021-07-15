@@ -21,6 +21,7 @@ app.get("/", (_req, res) => {
     res.sendFile(__dirname + "/view/index.html");
 });
 
+//Data
 var usocket = {},
     user = [], 
     id = [],
@@ -58,6 +59,7 @@ io.on("connection", (socket) => {
             });
         })();
     });
+
     socket.on("new user", (username, address) => {
         socket.emit("new user", username, address);
         if (!(username in usocket)) {
@@ -72,15 +74,25 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("select_chat", (user, username, index) => {
-        socket.emit("select_chat", user, username, index);
+    //Send a type message, `plain`, `jpeg`, ...
+    socket.on("send element", (user, username, index) => {
+        socket.emit("send element", user, username, index);
     });
 
-    socket.on("chat message", (msg, user, className) => {
-        io.emit("chat message", msg, user, className);
-        console.log("user: " + user + " -> " + msg);
+    //Send message in `group`
+    socket.on("chat message group", (msg, user, className) => {
+        io.emit("chat message group", msg, user, className);
+        //in public messages are not saved
+        console.log("Public: " + user + " -> " + msg);
     });
 
+    //Recieve address and send to address(private chat)
+    socket.on("send message private", (message, address) => {
+        console.log(message);
+        io.to(address).emit("selected", message);
+    });
+
+    //Resize image in server to client with broadcast
     socket.on("buffer", (object) => {
         sharp(object)
             .rotate()
@@ -96,6 +108,7 @@ io.on("connection", (socket) => {
             });
     });
 
+    //alert all users that a client has exited
     socket.on("disconnect", () => {
         if (socket.username in usocket) {
             delete usocket[socket.username];
@@ -104,26 +117,10 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("user left", socket.username);
         console.log(user);
     });
-
-    socket.on("send private message", (res, address) => {
-        // socket.emit("send private message", res, address);
-        console.log(res);
-        messagesData.push(res);
-        console.log(messagesData);
-        // $("#submit").on("click", () => {
-            io.to(address).emit("receive private message", res);
-        // });
-    });
-
-    socket.on("log", (message, address) => {
-        console.log(message);
-        io.to(address).emit("selected", message);
-        // io.to(address).emit("receive private message", message);
-    })
 });
 
 app.set("port", process.env.PORT || 3000);
 
-server.listen(app.get("port"), function () {
+server.listen(app.get("port"), () => {
     console.log("Node app is running on port", app.get("port"));
 });
