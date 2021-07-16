@@ -20,7 +20,7 @@ ___
 - [ ] Right-Click do mouse personalizado;
 - [ ] Foto de usuário(🚧Em progresso🚧)
 - [ ] Status de usuário(🚧Em progresso🚧)
-- [ ] Criação de salas;
+- [x] Criação de salas;
 - [x] Implementação de WebRTC;
     - [x] Chamada de Video;
     - [ ] Chamada de Audio;
