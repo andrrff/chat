@@ -73,8 +73,22 @@ Envia mensagem para todos os clients conectados
 socket.on("chat message group", (msg, user, className))
 ```
 > **msg**: Valor dentro do `input#input.write-message`
-**user**: 🚧
-**className**: 🚧
+**user**: Valor dentro do `formsValue[0]`
+**className**: Valor para atribuir no style da box message
+
+- #### Send Message Private
+Envia mensagem de um client para outro atraves do `socket.id`
+```javascript
+socket.on("send message private", (message, address))
+```
+> **message**: Valor dentro do `input#input.write-message`
+**address**: Valor do `socket.id` do client conectado
+
+- #### Disconnect
+Emite a todos os usuários o client que saiu
+```javascript
+socket.on("disconnect", ())
+```
 
 ___
 
