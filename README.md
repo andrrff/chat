@@ -10,6 +10,8 @@ ___
 ## Objetivos
 
 - [x] Sidebar com update em tempo real de usuários ativos;
+- [x] Chat privado com envio de mensagens via `SocketId`;
+- [x] Chat público;
 - [ ] Barra de pesquisa;
 - [ ] Notificações;
 - [ ] Resumo de mensagens de todos os usuários;
@@ -18,18 +20,35 @@ ___
 - [ ] Right-Click do mouse personalizado;
 - [ ] Foto de usuário(🚧Em progresso🚧)
 - [ ] Status de usuário(🚧Em progresso🚧)
-- [x] Chat privado com envio de mensagens via `SocketId`;
-- [x] Chat público;
 - [ ] Criação de salas;
 - [ ] Implementação de WebRTC(🚧Em progresso🚧);
     - [ ] Chamada de Video;
     - [ ] Chamada de Audio;
 - [ ] Implementação do Redis;
 
-<!-- ___
+___
 
-## Sockets -->
+## Sockets
 
+### Server Side
+- #### New User
+Ele vem do client no momento em que é dado o username no `SweerAlert2`, dentro dele temos três emições em que trasmitem para todos os usuários junto com quem mandou a emição, desta forma atualizando a lista de usuário de acordo com o server.
+```
+socket.on("new user", (username, address))
+```
+Ele carrega consigo dois paramentros `username` e `address`
+> **username**: formValues[0] - valor trazido do `Swal.fire()`
+**address**: `socket.id` - valor gerado no momento da conexão com o site
+
+Estes valores serão armazenados em metadatas, e emitidos para outros sockets, futuramente irei implementar no `Redis`.
+
+- #### login
+Ele pega os valores vindo do `new user`, e em seguida envia para todos os client sem excessão para que não tenha nenhum client desatualizado conforme novos users chegam e registram seus `username`.
+```
+socket.on("new user", (username, address))
+```
+> **user**: É um vetor com todos os username logados
+**id**: É um vetor com todos os `socket.id` dos clients conectados
 
 
 ___
