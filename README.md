@@ -21,8 +21,8 @@ ___
 - [ ] Foto de usuário(🚧Em progresso🚧)
 - [ ] Status de usuário(🚧Em progresso🚧)
 - [ ] Criação de salas;
-- [ ] Implementação de WebRTC(🚧Em progresso🚧);
-    - [ ] Chamada de Video;
+- [x] Implementação de WebRTC;
+    - [x] Chamada de Video;
     - [ ] Chamada de Audio;
 - [ ] Implementação do Redis;
 
