@@ -4290,7 +4290,17 @@ var input = document.getElementById("input");
     $("span.user-name").text(formValues[0]);
     $("button#call").on("click", () => {
         input.value = "Código da sala: " + uuidv4();
-        socket.emit("chat message group", "Entrou em call <br> "+ "Código da sala: " + uuidv4(), formValues[0], "");
+        socket.emit(
+            "chat message group",
+            "Um sala foi gerada uwu!!! <br> " +
+                "Código da sala: " +
+                "<a href=" +
+                uuidv4() +
+                " target='_blank'>" +
+                uuidv4() + "</a>",
+            formValues[0],
+            ""
+        );
     })
     socket.emit("new user", formValues[0], socket.id);
 
