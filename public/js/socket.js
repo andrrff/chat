@@ -57,7 +57,6 @@ var input = document.getElementById("input");
                 "body": input.value,
                 "time": new Date()
             };
-            // var className = "reverse";
             $(".chat-wrapper").append(
                 '<div class="message-wrapper reverse"><div class="message-box-wrapper"><div class="message-box">' +
                     input.value +
@@ -91,7 +90,7 @@ var input = document.getElementById("input");
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    socket.on('receive private message', function (data) {
+    socket.on('receive private message', (data) => {
         console.log("Voce recebeu uma mensagem uwu")
         $(".chat-wrapper").append(
             '<div class="message-wrapper"' +
@@ -179,7 +178,7 @@ var input = document.getElementById("input");
         );
     })
 
-    socket.on("user left", function (data) {
+    socket.on("user left", (data) => {
         if (data != null) {
             $("div." + md5(data)).remove();
         }

@@ -90,6 +90,76 @@ Emite a todos os usuários o client que saiu
 socket.on("disconnect", ())
 ```
 
+### Client Side
+- #### New User
+Pega os valores que é dado no username em `SweerAlert2`, em que faz a emição para o server, sinalizando o `username` e o `socket.id` da nova conexão.
+```javascript
+socket.emit("new user", formValues[0], socket.id)
+```
+
+- #### Login
+Estrutura os dados na sidebar, responsável por sinalizar graficamente os candidatos para envio de mensagens
+```javascript
+socket.on("login", (user, id))
+```
+> **user**: É um vetor com todos os username logados
+**id**: É um vetor com todos os `socket.id` dos clients conectados
+
+Todos os dados são tratos usando `jQuery`
+
+- #### Send Element
+Intermediador do do delivery das mensagem privadas, onde guardará os valores recebidos em `json` em uma variável chamada `req` desta forma enviando para o server atraves da emição `socket.emit("send message private", req, addressers[index])`:
+```json
+{
+    "addresser": String,
+    "recipient": String,
+    "type": String,
+    "body": String,
+    "time": Date
+}
+```
+```javascript
+socket.on("send element", (addressers, recipient, index)
+```
+> **addressers**: É um vetor com todos os `socket.id` logados
+**recipient**: É o username do destinatário
+**index**: Índice na lista de users
+
+- #### Load Messages
+🚧 em progesso 🚧
+
+- #### Chat Message Group
+Recebe o broadcast do server e grava a mensagem no `.chat-wrapper` usando `jQuery`
+```javascript
+socket.on("chat message group", (msg, user, className))
+```
+> **msg**: Valor dentro do `input#input.write-message`
+**user**: Valor dentro do `formsValue[0]`
+**className**: Valor para atribuir no style da box message
+
+- #### Receive Private Message
+Recebe do server a mensagem envia para o client, sinalizando o recebimento de uma mensagem através do seu `socket.id`
+```javascript
+socket.on("receive private message", (data))
+```
+> **data**: O valor registrado anteriormente na `req` aqui ele é lido no client destinatário e tratado
+
+- #### Users
+O coração das `callbacks`, ele faz o uso de toda a lógica presente na visualização e interação do usuário, tomando de conta inteiramente das ações.
+```javascript
+socket.on("users", (users, username))
+```
+
+> **users**: É um vetor com todos os `socket.id` logados
+**username**: É um vetor com todos os username logados
+
+- #### User Left
+Pega a lista atualizado de usuários ativos no server, e faz remoção de um elemento no html quando um client faz o logout
+```javascript
+socket.on("user left", (data))
+```
+> **data**: É o username
+
 ___
 
 ## Comandos
