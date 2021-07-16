@@ -109,7 +109,7 @@ Todos os dados são tratos usando `jQuery`
 
 - #### Send Element
 Intermediador do do delivery das mensagem privadas, onde guardará os valores recebidos em `json` em uma variável chamada `req` desta forma enviando para o server atraves da emição `socket.emit("send message private", req, addressers[index])`:
-```json
+```js
 {
     "addresser": String,
     "recipient": String,
