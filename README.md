@@ -33,7 +33,7 @@ ___
 ### Server Side
 - #### New User
 Ele vem do client no momento em que é dado o username no `SweerAlert2`, dentro dele temos três emições em que trasmitem para todos os usuários junto com quem mandou a emição, desta forma atualizando a lista de usuário de acordo com o server.
-```
+```javascript
 socket.on("new user", (username, address))
 ```
 Ele carrega consigo dois paramentros `username` e `address`
@@ -44,7 +44,7 @@ Estes valores serão armazenados em metadatas, e emitidos para outros sockets, f
 
 - #### Login
 Ele pega os valores vindo do `new user`, e em seguida envia para todos os client sem excessão para que não tenha nenhum client desatualizado conforme novos users chegam e registram seus `username`.
-```
+```javascript
 io.emit("login", user, id)
 ```
 > **user**: É um vetor com todos os username logados
@@ -52,7 +52,7 @@ io.emit("login", user, id)
 
 - #### Users
 Ele pega os valores vindo do `new user`, e em seguida envia para todos os client valores para interações especialmente na sidebar
-```
+```javascript
 io.emit("users", id, user)
 ```
 > **user**: É um vetor com todos os username logados
@@ -60,7 +60,7 @@ io.emit("users", id, user)
 
 - #### Send Element
 Ele pega os valores vindo do client `users`, em que envia os `addressers`, o `recipient` e o `index` requerido, ele tem uma função mais pra intermediador no server side, servindo como uma ponte para a `send message private`
-```
+```javascript
 socket.on("send element", (addressers, recipient, index))
 ```
 > **addressers**: É um vetor com todos os `socket.id` dos clients conectados
@@ -68,11 +68,11 @@ socket.on("send element", (addressers, recipient, index))
 **index**: É o índice do objeto interagido na sidebar
 
 - #### Chat Message Group
-🚧
-```
+Envia mensagem para todos os clients conectados
+```javascript
 socket.on("chat message group", (msg, user, className))
 ```
-> **msg**: 🚧
+> **msg**: Valor dentro do `input#input.write-message`
 **user**: 🚧
 **className**: 🚧
 
