@@ -75,8 +75,8 @@ io.on("connection", (socket) => {
     });
 
     //Send a type message, `plain`, `jpeg`, ...
-    socket.on("send element", (user, username, index) => {
-        socket.emit("send element", user, username, index);
+    socket.on("send element", (addressers, recipient, index) => {
+        socket.emit("send element", addressers, recipient, index);
     });
 
     //Send message in `group`
