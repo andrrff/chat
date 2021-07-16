@@ -1,23 +1,7 @@
 var socket = io();
 const md5 = require("md5");
 const Swal = require("sweetalert2");
-// const Peer = require("peerjs");
-// const peer = new Peer("pick-an-id"); 
-
-// const conn = peer.connect("another-peers-id");
-// conn.on("open", () => {
-//     conn.send("hi!");
-// });
-
-// peer.on("connection", (conn) => {
-//     conn.on("data", (data) => {
-//         // Will print 'hi!'
-//         console.log(data);
-//     });
-//     conn.on("open", () => {
-//         conn.send("hello!");
-//     });
-// });
+const { v4: uuidv4 } = require("uuid");
 
 var socket = io.connect();
 
@@ -40,6 +24,10 @@ var input = document.getElementById("input");
 
     console.log("Bem-vindo " + formValues[0] + ", seja educado com os amiguinhos😊");
     $("span.user-name").text(formValues[0]);
+    $("button#call").on("click", () => {
+        input.value = "Código da sala: " + uuidv4();
+        socket.emit("chat message group", "Um sala foi gerada uwu!!! <br> "+ "Código da sala: " + uuidv4(), formValues[0], "");
+    })
     socket.emit("new user", formValues[0], socket.id);
 
     socket.on("login", (user, id) => {
