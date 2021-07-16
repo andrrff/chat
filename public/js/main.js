@@ -1,4 +1,4 @@
-$(".sidebar-dropdown > a").click(function () {
+$(".sidebar-dropdown > a").on("click", () => {
     $(".sidebar-submenu").slideUp(200);
     if ($(this).parent().hasClass("active")) {
         $(".sidebar-dropdown").removeClass("active");
@@ -10,9 +10,9 @@ $(".sidebar-dropdown > a").click(function () {
     }
 });
 
-$("#close-sidebar").click(function () {
+$("#close-sidebar").on("click", () => {
     $(".page-wrapper").removeClass("toggled");
 });
-$("#show-sidebar").click(function () {
+$("#show-sidebar").on("click", () => {
     $(".page-wrapper").addClass("toggled");
 });

@@ -3426,6 +3426,23 @@ if (typeof this !== 'undefined' && this.Sweetalert2){  this.swal = this.sweetAle
 var socket = io();
 const md5 = require("md5");
 const Swal = require("sweetalert2");
+// const Peer = require("peerjs");
+// const peer = new Peer("pick-an-id"); 
+
+// const conn = peer.connect("another-peers-id");
+// conn.on("open", () => {
+//     conn.send("hi!");
+// });
+
+// peer.on("connection", (conn) => {
+//     conn.on("data", (data) => {
+//         // Will print 'hi!'
+//         console.log(data);
+//     });
+//     conn.on("open", () => {
+//         conn.send("hello!");
+//     });
+// });
 
 var socket = io.connect();
 
@@ -3482,7 +3499,6 @@ var input = document.getElementById("input");
                 "body": input.value,
                 "time": new Date()
             };
-            // var className = "reverse";
             $(".chat-wrapper").append(
                 '<div class="message-wrapper reverse"><div class="message-box-wrapper"><div class="message-box">' +
                     input.value +
@@ -3516,7 +3532,7 @@ var input = document.getElementById("input");
         window.scrollTo(0, document.body.scrollHeight);
     });
 
-    socket.on('receive private message', function (data) {
+    socket.on('receive private message', (data) => {
         console.log("Voce recebeu uma mensagem uwu")
         $(".chat-wrapper").append(
             '<div class="message-wrapper"' +
@@ -3604,7 +3620,7 @@ var input = document.getElementById("input");
         );
     })
 
-    socket.on("user left", function (data) {
+    socket.on("user left", (data) => {
         if (data != null) {
             $("div." + md5(data)).remove();
         }

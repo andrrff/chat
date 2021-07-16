@@ -11,14 +11,34 @@ const express = require("express"),
     http = require("http"),
     server = http.createServer(app),
     { Server } = require("socket.io"),
-    io = new Server(server),
+    io = require("socket.io")(server, {
+        cors: {
+            origin: "*",
+        },
+    }),
     fs = require("fs"),
     path = require("path"),
     sharp = require("sharp");
 
+const { ExpressPeerServer } = require("peer");
+const { v4: uuidv4 } = require("uuid");
+const peerServer = ExpressPeerServer(server, {
+    debug: true,
+});
+
+console.log(peerServer)
+
+app.set("view engine", "ejs");
+// app.use("/peerjs", peerServer);
+app.get("/call", (req, res) => {
+    res.redirect(`/${uuidv4()}`);
+});
+app.get("/:room", (req, res) => {
+    res.render("room", { roomId: req.params.room });
+});
 app.use(express.static(__dirname));
 app.get("/", (_req, res) => {
-    res.sendFile(__dirname + "/view/index.html");
+    res.sendFile(__dirname + "/views/index.html");
 });
 
 //Data
@@ -28,6 +48,21 @@ var usocket = {},
     messagesData = [];
 
 io.on("connection", (socket) => {
+    //test
+    socket.on("join-room", (roomId, userId) => {
+        socket.join(roomId); // Join the room
+        socket.broadcast.emit("user-connected", userId); // Tell everyone else in the room that we joined
+
+        // Communicate the disconnection
+        socket.on("disconnect", () => {
+            socket.broadcast.emit("user-disconnected", userId);
+        });
+    });
+
+
+
+
+
     socket.on("upload-image", (message) => {
         var writer = fs.createWriteStream(
             path.resolve(__dirname, "./tmp/" + message.name),

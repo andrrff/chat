@@ -1,6 +1,23 @@
 var socket = io();
 const md5 = require("md5");
 const Swal = require("sweetalert2");
+// const Peer = require("peerjs");
+// const peer = new Peer("pick-an-id"); 
+
+// const conn = peer.connect("another-peers-id");
+// conn.on("open", () => {
+//     conn.send("hi!");
+// });
+
+// peer.on("connection", (conn) => {
+//     conn.on("data", (data) => {
+//         // Will print 'hi!'
+//         console.log(data);
+//     });
+//     conn.on("open", () => {
+//         conn.send("hello!");
+//     });
+// });
 
 var socket = io.connect();
 
