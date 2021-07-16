@@ -28,7 +28,7 @@ var input = document.getElementById("input");
         input.value = "Código da sala: " + uuidv4();
         socket.emit(
             "chat message group",
-            "Um sala foi gerada uwu!!! <br> " +
+            "Uma sala foi gerada uwu!!! <br> " +
                 "Código da sala: " +
                 "<a href=" +
                 uuidv4() +
