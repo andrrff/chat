@@ -4,6 +4,10 @@ var videoMain = document.getElementById("video-main"); // Find the Video-Main el
 
 const myPeer = new Peer(); // Creating a peer element which represents the current user
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
+myVideo.className = "iam";
+myVideo.addEventListener("click", () => {
+    videoMain.children[0].srcObject = myVideo.srcObject;
+})
 myVideo.muted = true; // Mute ourselves on our end so there is no feedback loop
 
 // Access the user's video and audio
@@ -13,7 +17,7 @@ navigator.mediaDevices
         audio: true,
     })
     .then((stream) => {
-        addVideoStream(myVideo, stream); // Display our video to ourselves
+        addVideoStream(myVideo, stream, myVideo.className); // Display our video to ourselves
 
         myPeer.on("call", (call) => {
             // When we join someone's room we will receive a call from them
@@ -63,11 +67,7 @@ function addVideoStream(video, stream, className) {
     video.className = className;
     $("video." + className).on("click", () => {
         videoMain.children[0].srcObject = video.srcObject;
-        // videoMain.children[0] = $(this) //Video principal
-        // videoMain.children[0].addEventListener("loadedmetadata", () => {
-        //     // Play the video as it loads
-        //     videoMain.children[0].play();
-        // });
+        // console.log("Clicou em: ", className)
     });
     video.addEventListener("loadedmetadata", () => {
         // Play the video as it loads
