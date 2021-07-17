@@ -50,7 +50,9 @@
                 margin: 10px;
                 grid-template-columns: 100%;
                 grid-gap: 20px;
-                grid-auto-rows: 500px;
+                grid-auto-rows: 100%   !important;
+                width: 100%    !important;
+                height: 100%   !important;
             }
             #video-grid
             {
@@ -61,12 +63,17 @@
                 overflow: auto;
                 scroll-behavior: smooth;
             }
+            #video-grid > video
+            {
+                width: 50%;
+            }
             #video-main
             {
                 margin: 10px;
                 height: 500px;
                 float: right;
                 width: auto;
+                height: 100%   !important;
             }
         }
         video {
