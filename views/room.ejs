@@ -15,6 +15,10 @@
     <title>Call video</title>
     <!-- Make a grid of 300x300 videos  -->
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body{
             background: #252731;
         }
@@ -41,8 +45,12 @@
         {
             margin: 10px;
             float: right;
-            width: 100%    !important;
+            width: 100vw !important;
             height: auto   !important;
+        }
+        #video-main > video
+        {
+            min-height: 85vh   !important;
         }
         @media only screen and (max-width: 900px) {
             #principal {
@@ -51,8 +59,6 @@
                 grid-template-columns: 100%;
                 grid-gap: 20px;
                 grid-auto-rows: 100%   !important;
-                width: 100%    !important;
-                height: 100%   !important;
             }
             #video-grid
             {
@@ -74,6 +80,11 @@
                 float: right;
                 width: auto;
                 height: 100%   !important;
+            }
+            #video-main > video
+            {
+                width: 95vw    !important;
+                height: 90vh   !important;
             }
         }
         video {
