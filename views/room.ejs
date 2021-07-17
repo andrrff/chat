@@ -12,23 +12,53 @@
     <script src = "/socket.io/socket.io.js" defer></script>
     <!-- Load in script.js, our client-side script -->
     <script src = "/controllers/webrtc.js" defer></script>
-    <title>Video App</title>
+    <title>Call video</title>
     <!-- Make a grid of 300x300 videos  -->
     <style>
+        body{
+            background: #252731;
+        }
         #video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, 300px);
-            grid-auto-rows: 300px;
+            display: inline-grid;
+            float: right;
+            width: auto;
+            margin: 10px;
+            grid-template-columns: repeat(auto-fill, 200px);
+            grid-gap: 20px;
+            grid-auto-rows: 200px;
+        }
+        #principal
+        {
+            display: inline-flex;
+            margin: 10px;
+            grid-template-columns: 100%;
+            grid-gap: 20px;
+            grid-auto-rows: 500px;
+        }
+        #video-main
+        {
+            margin: 10px;
+            float: right;
+            width: auto;
         }
         video {
             width: 100%;
             height: 100%;
+            border-radius: 10px;
             object-fit: cover;
         }
     </style>
 </head>
 <body>
     <!-- Make our video grid -->
-    <div id="video-grid"></div>
+    <div id="principal">
+        <div id="video-main">
+            <video controls preload="metadata">
+                <source src="https://5.orezraey.workers.dev/0:/Animes/11eyes/%5BInfinite%5D%2011eyes%20-%2001%20%5B720p%5D.mp4" type="video/mp4"/>
+                Video not supported.
+            </video>
+        </div>
+        <div id="video-grid"></div>
+    </div>
 </body>
 </html>
