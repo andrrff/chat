@@ -21,13 +21,19 @@ navigator.mediaDevices
             const video = document.createElement("video"); // Create a video tag for them
             call.on("stream", (userVideoStream) => {
                 // When we recieve their stream
-                addVideoStream(video, userVideoStream); // Display their video to ourselves
+                addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
             });
         });
 
         socket.on("user-connected", (userId) => {
+            console.log("user connected: ", userId);
             // If a new user connect
             connectToNewUser(userId, stream);
+        });
+        socket.on("user-disconnected", (userId) => {
+            // If a new user connect
+            $("video." + userId).remove()
+            console.log("user disconenected: ",userId);
         });
     });
 
@@ -41,8 +47,10 @@ function connectToNewUser(userId, stream) {
     const call = myPeer.call(userId, stream); // Call the user who just joined
     // Add their video
     const video = document.createElement("video");
+    // video.className = userId;
     call.on("stream", (userVideoStream) => {
-        addVideoStream(video, userVideoStream);
+        // console.log(userVideoStream);
+        addVideoStream(video, userVideoStream, userId);
     });
     // If they leave, remove their video
     call.on("close", () => {
@@ -50,12 +58,13 @@ function connectToNewUser(userId, stream) {
     });
 }
 
-function addVideoStream(video, stream) {
+function addVideoStream(video, stream, className) {
     video.srcObject = stream;
+    video.className = className;
     video.addEventListener("loadedmetadata", () => {
         // Play the video as it loads
         video.play();
     });
     videoGrid.append(video); // Append video element to videoGrid
-    videoMain.children[0].srcObject = stream //Video principal
+    videoMain.children[0].srcObject = stream; //Video principal
 }

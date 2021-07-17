@@ -61,8 +61,6 @@ io.on("connection", (socket) => {
 
 
 
-
-
     socket.on("upload-image", (message) => {
         var writer = fs.createWriteStream(
             path.resolve(__dirname, "./tmp/" + message.name),
