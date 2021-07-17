@@ -61,6 +61,13 @@ function connectToNewUser(userId, stream) {
 function addVideoStream(video, stream, className) {
     video.srcObject = stream;
     video.className = className;
+    $("video." + className).on("click", () => {
+        videoMain.children[0] = $(this) //Video principal
+        // videoMain.children[0].addEventListener("loadedmetadata", () => {
+        //     // Play the video as it loads
+        //     videoMain.children[0].play();
+        // });
+    });
     video.addEventListener("loadedmetadata", () => {
         // Play the video as it loads
         video.play();
