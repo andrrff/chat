@@ -1,6 +1,6 @@
 const socket = io("/"); // Create our socket
 const videoGrid = document.getElementById("video-grid"); // Find the Video-Grid element
-// var videoMain = document.getElementById("video-main"); // Find the Video-Main element
+var videoMain = document.getElementById("video-main"); // Find the Video-Main element
 
 const myPeer = new Peer(); // Creating a peer element which represents the current user
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
@@ -57,6 +57,5 @@ function addVideoStream(video, stream) {
         video.play();
     });
     videoGrid.append(video); // Append video element to videoGrid
-    // videoMain.appendChild(); // Append video element to videoGrid
-    // videoMain = videozz; // Append video element to videoGrid
+    videoMain.children[0].srcObject = stream //Video principal
 }
