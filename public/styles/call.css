@@ -5,6 +5,20 @@ html, body {
         body{
             background: #252731;
         }
+        .btn-toggle
+        {
+            outline: none; 
+            border: none; 
+            color: rgb(226, 225, 225);
+            /* width: 70px; */
+            /* height: 70px; */
+            border-radius: 8px;
+            background-color: #212227;
+        }
+        .btn-toggle > i
+        {
+            transform: scale(6);
+        }
         #video-grid {
             display: inline-grid;
             float: right;
@@ -101,7 +115,6 @@ html, body {
                 display: flex;
                 align-items: center;
                 justify-content: flex-start;
-                width: 100%;
                 overflow: auto;
                 scroll-behavior: smooth;
             }

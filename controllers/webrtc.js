@@ -7,6 +7,7 @@ var videoMain = document.getElementById("video-main"); // Find the Video-Main el
 const myPeer = new Peer(); // Creating a peer element which represents the current user
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
 myVideo.className = "iam";
+
 myVideo.addEventListener("click", () => {
     videoMain.children[0].srcObject = myVideo.srcObject;
 });
