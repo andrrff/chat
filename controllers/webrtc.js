@@ -137,3 +137,7 @@ function gallery(elements) {
         });
     });
 }
+
+$(".quit").on("click", () => {
+    window.close();
+})

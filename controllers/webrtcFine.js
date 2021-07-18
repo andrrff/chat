@@ -138,6 +138,10 @@ function gallery(elements) {
         });
     });
 }
+
+$(".quit").on("click", () => {
+    window.close();
+})
 },{"sweetalert2":2}],2:[function(require,module,exports){
 /*!
 * sweetalert2 v11.0.18
