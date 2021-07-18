@@ -131,10 +131,6 @@ function gallery(elements) {
         let boxInner = div;
         box.classList.add("box");
         boxInner.classList.add("boxInner");
-        $(galleryView).append(
-            $(box).append(
-                $(boxInner).append($(videoGallery))
-            )
-        );
+        $(galleryView).append($(videoGallery));
     });
 }

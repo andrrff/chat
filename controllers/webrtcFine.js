@@ -85,7 +85,8 @@ function connectToNewUser(userId, stream) {
     call.on("stream", (userVideoStream) => {
         // console.log(userVideoStream);
         addVideoStream(video, userVideoStream, userId);
-        gallery([userVideoStream]);
+        videos.push(userVideoStream)
+        gallery(videos);
         // gallery(video, userVideoStream);
     });
     // If they leave, remove their video
@@ -131,11 +132,7 @@ function gallery(elements) {
         let boxInner = div;
         box.classList.add("box");
         boxInner.classList.add("boxInner");
-        $(galleryView).append(
-            $(box).append(
-                $(boxInner).append($(videoGallery))
-            )
-        );
+        $(galleryView).append($(videoGallery));
     });
 }
 },{"sweetalert2":2}],2:[function(require,module,exports){

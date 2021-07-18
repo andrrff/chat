@@ -160,72 +160,52 @@ video {
     max-width: 900px;
 }
 
-.box {
-    float: left;
-    margin-top: 100px;
-    position: relative;
-    width: 20%;
-    padding-bottom: 20%;
+#wrap {
+  /* Prevent vertical gaps */
+  line-height: 0;
+  margin: 20px;  
+  -webkit-column-count: 5;
+  -webkit-column-gap:   0px;
+  -moz-column-count:    5;
+  -moz-column-gap:      0px;
+  column-count:         5;
+  column-gap:           0px;  
 }
-.boxInner {
-    position: absolute;
-    border-radius: 8px;
-    left: 10px;
-    right: 10px;
-    top: 10px;
-    bottom: 10px;
-    overflow: hidden;
+
+#wrap video {
+  /* Just in case there are inline attributes */
+  width: 30vh !important;
+  height: 30vh !important;
+  margin-top: 30px;
 }
-.boxInner video {
-    width: 200px;
+
+@media (max-width: 1200px) {
+  #wrap {
+  -moz-column-count:    4;
+  -webkit-column-count: 4;
+  column-count:         4;
+  }
 }
-.boxInner .titleBox {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin-bottom: -50px;
-    background: #000;
-    background: rgba(0, 0, 0, 0.5);
-    color: #fff;
-    padding: 10px;
-    text-align: center;
-    -webkit-transition: all 0.3s ease-out;
-    -moz-transition: all 0.3s ease-out;
-    -o-transition: all 0.3s ease-out;
-    transition: all 0.3s ease-out;
+@media (max-width: 1000px) {
+  #wrap {
+  -moz-column-count:    3;
+  -webkit-column-count: 3;
+  column-count:         3;
+  }
 }
-body.no-touch .boxInner:hover .titleBox,
-body.touch .boxInner.touchFocus .titleBox {
-    margin-bottom: 0;
+@media (max-width: 800px) {
+  #wrap {
+  -moz-column-count:    2;
+  -webkit-column-count: 2;
+  column-count:         2;
+  }
 }
-@media only screen and (max-width: 480px) {
-    /* Smartphone view: 1 tile */
-    .box {
-        width: 100%;
-        padding-bottom: 100%;
-    }
-}
-@media only screen and (max-width: 650px) and (min-width: 481px) {
-    /* Tablet view: 2 tiles */
-    .box {
-        width: 50%;
-        padding-bottom: 50%;
-    }
-}
-@media only screen and (max-width: 1050px) and (min-width: 651px) {
-    /* Small desktop / ipad view: 3 tiles */
-    .box {
-        width: 33.3%;
-        padding-bottom: 33.3%;
-    }
-}
-@media only screen and (max-width: 1290px) and (min-width: 1051px) {
-    /* Medium desktop: 4 tiles */
-    .box {
-        width: 25%;
-        padding-bottom: 25%;
-    }
+@media (max-width: 200px) {
+  #wrap {
+  -moz-column-count:    1;
+  -webkit-column-count: 1;
+  column-count:         1;
+  }
 }
 
 #wrap.active
