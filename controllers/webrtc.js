@@ -1,3 +1,5 @@
+const Swal = require("sweetalert2");
+
 const socket = io("/"); // Create our socket
 const videoGrid = document.getElementById("video-grid"); // Find the Video-Grid element
 var videoMain = document.getElementById("video-main"); // Find the Video-Main element
@@ -7,7 +9,7 @@ const myVideo = document.createElement("video"); // Create a new video tag to sh
 myVideo.className = "iam";
 myVideo.addEventListener("click", () => {
     videoMain.children[0].srcObject = myVideo.srcObject;
-})
+});
 myVideo.muted = true; // Mute ourselves on our end so there is no feedback loop
 
 // Access the user's video and audio
@@ -31,13 +33,29 @@ navigator.mediaDevices
 
         socket.on("user-connected", (userId) => {
             console.log("user connected: ", userId);
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener("mouseenter", Swal.stopTimer);
+                    toast.addEventListener("mouseleave", Swal.resumeTimer);
+                },
+            });
+
+            Toast.fire({
+                icon: "info",
+                title: "New User in room",
+            });
             // If a new user connect
             connectToNewUser(userId, stream);
         });
         socket.on("user-disconnected", (userId) => {
             // If a new user connect
-            $("video." + userId).remove()
-            console.log("user disconenected: ",userId);
+            $("video." + userId).remove();
+            console.log("user disconenected: ", userId);
         });
     });
 
