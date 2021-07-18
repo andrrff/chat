@@ -132,5 +132,8 @@ function gallery(elements) {
         box.classList.add("box");
         boxInner.classList.add("boxInner");
         $(galleryView).append($(videoGallery));
+        call.on("close", () => {
+            $(galleryView).append($(videoGallery));
+        });
     });
 }
