@@ -35,7 +35,7 @@
         #principal
         {
             display: inline-flex;
-            margin: 10px;
+            /* margin: 10px; */
             grid-template-columns: 100%;
             grid-gap: 20px;
             grid-auto-rows: 500px;
@@ -91,7 +91,7 @@
             grid-gap: 15px;
             position: fixed;
             top: 80vh;
-            height: 30vh;
+            height: 50vh;
             width: 100vw;
             opacity: 0;
             transition: top 1.5s ease-in-out;
@@ -103,13 +103,13 @@
         .footer-actions:hover
         {
             opacity: 1;
-            top: 73vh;
+            top: 75vh;
             transition: all 0.3s;
         }
         @media only screen and (max-width: 900px) {
             #principal {
                 display: inline-table;
-                margin: 10px;
+                /* margin: 10px; */
                 grid-template-columns: 100%;
                 grid-gap: 20px;
                 grid-auto-rows: 100%   !important;
@@ -141,6 +141,20 @@
                 width: 95vw    !important;
                 height: 90vh   !important;
             }
+            .footer-actions
+            {
+                background-image: linear-gradient(to bottom, rgba(255, 0, 0, 0), rgb(0, 0, 0));
+                display: flex;
+                align-content: center;
+                justify-content: center;
+                grid-gap: 15px;
+                position: initial;
+                top: 120vh;
+                opacity: 1;
+                height: 20vh;
+                width: 100vw;
+                
+            }
         }
         video {
             width: 100%;
@@ -168,13 +182,13 @@
         <button class="btn">
             <i class="fas fa-video-slash"></i>
         </button>
-        <button class="btn action">
+        <button class="btn action" hidden>
             <i class="fas fa-video"></i>
         </button>
         <button class="btn">
             <i class="fas fa-microphone-slash"></i>
         </button>
-        <button class="btn action">
+        <button class="btn action" hidden>
             <i class="fas fa-microphone"></i>
         </button>
         <button class="btn">
