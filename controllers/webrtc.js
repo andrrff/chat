@@ -84,7 +84,8 @@ function connectToNewUser(userId, stream) {
     call.on("stream", (userVideoStream) => {
         // console.log(userVideoStream);
         addVideoStream(video, userVideoStream, userId);
-        gallery([userVideoStream]);
+        videos.push(userVideoStream)
+        gallery(videos);
         // gallery(video, userVideoStream);
     });
     // If they leave, remove their video
