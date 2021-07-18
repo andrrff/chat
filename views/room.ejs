@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.0.13/css/all.css'>
     <!-- Set the ROOM_ID variable to the roomId that is passed in by server.js -->
     <script>
         const ROOM_ID = "<%= roomId %>"
@@ -52,6 +53,61 @@
         {
             height: 95vh !important;
             height: 95vh !important;
+        }
+        .btn
+        {
+            background-color: #5fb4ff; 
+            outline: none; 
+            border: none; 
+            color: white;
+            width: 70px;
+            height: 70px;
+            border-radius: 100px;
+            transition: transform 0.1s;
+            cursor: pointer;
+            -o-transition: transform 0.1s ease-in-out; /* opera */
+            -ms-transition: transform 0.1s ease-in-out; /* IE 10 */
+            -moz-transition: transform 0.1s ease-in-out; /* Firefox */
+            -webkit-transition: transform 0.1s ease-in-out; /*safari and chrome */
+        }
+        .btn:hover
+        {
+            transform: scale(1.1);
+        }
+        .btn > i
+        {
+            transform:scale(1.8)
+        }
+        .btn.action
+        {
+            background-color: hsl(0, 100%, 69%);
+        }
+        .footer-actions
+        {
+            background-image: linear-gradient(to bottom, rgba(255, 0, 0, 0), black);
+            display: flex;
+            align-content: center;
+            justify-content: center;
+            grid-gap: 15px;
+            position: fixed;
+            top: 80vh;
+            height: 30vh;
+            width: 100vw;
+            /* visibility: hidden; */
+            opacity: 0;
+            transition: opacity 0.3s, visibility 0.3s;
+            transition: top 0.3s ease-in-out;
+            -o-transition: top 0.3s ease-in-out; /* opera */
+            -ms-transition: top 0.3s ease-in-out; /* IE 10 */
+            -moz-transition: top 0.3s ease-in-out; /* Firefox */
+            -webkit-transition: top 0.3s ease-in-out; /*safari and chrome */
+        }
+        .footer-actions:hover
+        {
+            visibility: visible;
+            opacity: 1;
+            transition: opacity 0.3s, visibility 0.3s;
+            top: 73vh;
         }
         @media only screen and (max-width: 900px) {
             #principal {
@@ -110,6 +166,26 @@
             </video>
         </div>
         <div id="video-grid"></div>
+    </div>
+    <div class="footer-actions">
+        <button class="btn">
+            <i class="fas fa-video-slash"></i>
+        </button>
+        <button class="btn action">
+            <i class="fas fa-video"></i>
+        </button>
+        <button class="btn">
+            <i class="fas fa-microphone-slash"></i>
+        </button>
+        <button class="btn action">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <button class="btn">
+            <i class="fas fa-desktop"></i>
+        </button>
+        <button class="btn action quit">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
     </div>
 </body>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js'></script>
