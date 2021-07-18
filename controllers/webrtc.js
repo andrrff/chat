@@ -8,6 +8,7 @@ var videoMain = document.getElementById("video-main"); // Find the Video-Main el
 
 const myPeer = new Peer(); // Creating a peer element which represents the current user
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
+var videos = [];
 myVideo.className = "iam";
 
 myVideo.addEventListener("click", () => {
@@ -23,6 +24,7 @@ navigator.mediaDevices
     })
     .then((stream) => {
         addVideoStream(myVideo, stream, myVideo.className); // Display our video to ourselves
+        videos.push(stream)
         // gallery(myVideo, stream);
 
         myPeer.on("call", (call) => {
@@ -30,10 +32,13 @@ navigator.mediaDevices
             call.answer(stream); // Stream them our video/audio
             const video = document.createElement("video"); // Create a video tag for them
             call.on("stream", (userVideoStream) => {
+                videos.push(userVideoStream);
                 // When we recieve their stream
                 // $(".view-gallery").on("click", () => {gallery(video, userVideoStream);})
                 // gallery(video, userVideoStream);
                 addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
+                // console.log(videos[0])
+                gallery(videos);
             });
         });
 
@@ -79,6 +84,7 @@ function connectToNewUser(userId, stream) {
     call.on("stream", (userVideoStream) => {
         // console.log(userVideoStream);
         addVideoStream(video, userVideoStream, userId);
+        gallery([userVideoStream]);
         // gallery(video, userVideoStream);
     });
     // If they leave, remove their video
@@ -100,30 +106,34 @@ function addVideoStream(video, stream, className) {
     });
     videoGrid.append(video); // Append video element to videoGrid
     videoMain.children[0].srcObject = stream; //Video principal
-    // gallery(video, stream)
+    $(".view-gallery").on("click", () => {
+
+        if (principal.classList == "active") {
+            principal.classList.remove("active");
+            galleryView.classList.add("active");
+        } else {
+            principal.classList.add("active");
+            galleryView.classList.remove("active");
+        }
+    });
 }
 
-function gallery() {
-    $("#video-grid").each((_, element) => {
+function gallery(elements) {
+    elements.forEach(element => {
+        var videoGallery = document.createElement("video");
+        videoGallery.srcObject = element;
+        videoGallery.addEventListener("loadedmetadata", () => {
+            videoGallery.play();
+        });
         let div = document.createElement("div");
         let box = div;
         let boxInner = div;
         box.classList.add("box");
         boxInner.classList.add("boxInner");
-        $(galleryView).append($(box).append($(boxInner).append($(element))))
-    })
+        $(galleryView).append(
+            $(box).append(
+                $(boxInner).append($(videoGallery))
+            )
+        );
+    });
 }
-
-$(".view-gallery").on("click", () => {
-    gallery()
-    if(principal.classList == "active")
-    {
-        principal.classList.remove("active");
-        galleryView.classList.add("active");
-    }
-    else
-    {
-        principal.classList.add("active");
-        galleryView.classList.remove("active");
-    }
-});
