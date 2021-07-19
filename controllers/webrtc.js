@@ -120,7 +120,13 @@ function addVideoStream(video, stream, className) {
 }
 
 function gallery(elements) {
-    elements.forEach(element => {
+    
+    var uniqueArray = elements.filter((item, pos) => {
+        return elements.indexOf(item) == pos;
+    });
+    console.log(uniqueArray)
+    console.log(elements);
+    uniqueArray.forEach(element => {
         var videoGallery = document.createElement("video");
         videoGallery.srcObject = element;
         videoGallery.addEventListener("loadedmetadata", () => {
@@ -132,9 +138,6 @@ function gallery(elements) {
         box.classList.add("box");
         boxInner.classList.add("boxInner");
         $(galleryView).append($(videoGallery));
-        call.on("close", () => {
-            $(galleryView).append($(videoGallery));
-        });
     });
 }
 
