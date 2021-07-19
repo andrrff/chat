@@ -51,7 +51,7 @@ io.on("connection", (socket) => {
     //test
     socket.on("join-room", (roomId, userId) => {
         socket.join(roomId); // Join the room
-        socket.broadcast.emit("user-connected", userId); // Tell everyone else in the room that we joined
+        socket.to(roomId).emit("user-connected", userId); // Tell everyone else in the room that we joined
 
         // Communicate the disconnection
         socket.on("disconnect", () => {

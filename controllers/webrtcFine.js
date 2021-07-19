@@ -45,22 +45,22 @@ navigator.mediaDevices
 
         socket.on("user-connected", (userId) => {
             console.log("user connected: ", userId);
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener("mouseenter", Swal.stopTimer);
-                    toast.addEventListener("mouseleave", Swal.resumeTimer);
-                },
-            });
+            // const Toast = Swal.mixin({
+            //     toast: true,
+            //     position: "top-end",
+            //     showConfirmButton: false,
+            //     timer: 3000,
+            //     timerProgressBar: true,
+            //     didOpen: (toast) => {
+            //         toast.addEventListener("mouseenter", Swal.stopTimer);
+            //         toast.addEventListener("mouseleave", Swal.resumeTimer);
+            //     },
+            // });
 
-            Toast.fire({
-                icon: "info",
-                title: "New User in room",
-            });
+            // Toast.fire({
+            //     icon: "info",
+            //     title: "New User in room",
+            // });
             // If a new user connect
             connectToNewUser(userId, stream);
         });
