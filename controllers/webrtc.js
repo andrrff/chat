@@ -70,7 +70,7 @@ function addVideoStream(video, stream, className) {
     video.className = className;
     $("video." + className).on("click", () => {
         videoMain.children[0].srcObject = video.srcObject;
-        console.log("Clicou: ", className)
+        // video.style.border
     });
     video.addEventListener("loadedmetadata", () => {
         // Play the video as it loads
@@ -89,6 +89,7 @@ $(".view-gallery").on("click", () => {
         videoMain.hidden = false;
         // videoGrid.hidden = true;
         videoGrid.style.removeProperty("display");
+        videoGrid.style.border;
     } else {
         videoMain.hidden = true;
         // videoGrid.hidden = false;
