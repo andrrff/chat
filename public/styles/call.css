@@ -116,8 +116,8 @@ body {
         scroll-behavior: smooth;
     }
     #video-grid > video {
-        width: 50%;
-        max-height: 200px;
+        width: 160px;
+        height: 160px;
     }
     #video-main {
         margin: 10px;
@@ -152,63 +152,4 @@ video {
     height: 200px;
     border-radius: 10px;
     object-fit: cover;
-}
-
-.wrap {
-    margin: auto;
-    width: 100%;
-    max-width: 900px;
-}
-
-#wrap {
-  /* Prevent vertical gaps */
-  line-height: 0;
-  margin: 20px;  
-  -webkit-column-count: 5;
-  -webkit-column-gap:   0px;
-  -moz-column-count:    5;
-  -moz-column-gap:      0px;
-  column-count:         5;
-  column-gap:           0px;  
-}
-
-#wrap video {
-  /* Just in case there are inline attributes */
-  width: 30vh !important;
-  height: 30vh !important;
-  margin-top: 30px;
-}
-
-@media (max-width: 1200px) {
-  #wrap {
-  -moz-column-count:    4;
-  -webkit-column-count: 4;
-  column-count:         4;
-  }
-}
-@media (max-width: 1000px) {
-  #wrap {
-  -moz-column-count:    3;
-  -webkit-column-count: 3;
-  column-count:         3;
-  }
-}
-@media (max-width: 800px) {
-  #wrap {
-  -moz-column-count:    2;
-  -webkit-column-count: 2;
-  column-count:         2;
-  }
-}
-@media (max-width: 200px) {
-  #wrap {
-  -moz-column-count:    1;
-  -webkit-column-count: 1;
-  column-count:         1;
-  }
-}
-
-#wrap.active
-{
-    display: none;
 }
