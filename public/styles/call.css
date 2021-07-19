@@ -127,8 +127,8 @@ body {
     }
     #video-grid > video {
         margin: 5px;
-        width: 160px;
-        height: 160px;
+        width: 20vh;
+        height: 20vh;
     }
     #video-main {
         margin: 10px;
