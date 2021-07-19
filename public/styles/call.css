@@ -30,6 +30,11 @@ body {
 #video-grid > video
 {
     margin: 10px;
+    width: 200px;
+    margin: 10px;
+    height: 200px;
+    border-radius: 10px;
+    object-fit: cover;
 }
 #principal {
     display: inline-flex;
@@ -117,6 +122,7 @@ body {
         align-items: center;
         justify-content: flex-start;
         overflow: auto;
+        float: left;
         scroll-behavior: smooth;
     }
     #video-grid > video {
@@ -127,7 +133,7 @@ body {
     #video-main {
         margin: 10px;
         height: 500px;
-        float: right;
+        float: left;
         width: auto;
         height: 100% !important;
     }
@@ -153,9 +159,31 @@ body {
     }
 }
 video {
-    max-width: 100%;
+    width: 100%;
     margin: 10px;
     height: 200px;
     border-radius: 10px;
     object-fit: cover;
+}
+
+@media (max-width: 1200px) {
+  #photos {
+  -moz-column-count:    4;
+  -webkit-column-count: 4;
+  column-count:         4;
+  }
+}
+@media (max-width: 1000px) {
+  #photos {
+  -moz-column-count:    3;
+  -webkit-column-count: 3;
+  column-count:         3;
+  }
+}
+@media (max-width: 800px) {
+  #photos {
+  -moz-column-count:    2;
+  -webkit-column-count: 2;
+  column-count:         2;
+  }
 }
