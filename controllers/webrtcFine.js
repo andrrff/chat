@@ -25,7 +25,7 @@ navigator.mediaDevices
     })
     .then((stream) => {
         addVideoStream(myVideo, stream, myVideo.className); // Display our video to ourselves
-        videos.push(stream)
+        // videos.push(stream)
         // gallery(myVideo, stream);
 
         myPeer.on("call", (call) => {
