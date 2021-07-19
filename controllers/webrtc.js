@@ -109,10 +109,10 @@ $(".view-gallery").on("click", () => {
     if (videoMain.hidden) {
         videoMain.hidden = false;
         videoGrid.hidden = true;
-        videoGrid.style.display = "block";
+        videoGrid.style.removeProperty("display");
     } else {
         videoMain.hidden = true;
         videoGrid.hidden = false;
-        videoGrid.style.removeProperty("display");
+        videoGrid.style.display = "inline-block";
     }
 });
