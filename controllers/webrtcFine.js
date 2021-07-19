@@ -25,7 +25,7 @@ navigator.mediaDevices
     })
     .then((stream) => {
         addVideoStream(myVideo, stream, myVideo.className); // Display our video to ourselves
-        // videos.push(stream)
+        videos.push(stream)
         // gallery(myVideo, stream);
 
         myPeer.on("call", (call) => {
@@ -39,7 +39,7 @@ navigator.mediaDevices
                 // gallery(video, userVideoStream);
                 addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
                 // console.log(videos[0])
-                gallery(videos);
+                gallery([userVideoStream]);
             });
         });
 
