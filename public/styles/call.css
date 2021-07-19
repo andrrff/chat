@@ -157,6 +157,10 @@ body {
         height: 20vh;
         width: 100vw;
     }
+    .btn.desktop
+    {
+        display: none
+    }
 }
 video {
     width: 100%;
