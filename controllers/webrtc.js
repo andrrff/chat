@@ -2,7 +2,6 @@
 
 const socket = io("/"); // Create our socket
 const videoGrid = document.getElementById("video-grid"); // Find the Video-Grid element
-var galleryView = document.getElementById("wrap");
 var videoMain = document.getElementById("video-main"); // Find the Video-Main element
 
 const myPeer = new Peer(); // Creating a peer element which represents the current user
@@ -29,10 +28,7 @@ navigator.mediaDevices
             call.answer(stream); // Stream them our video/audio
             const video = document.createElement("video"); // Create a video tag for them
             call.on("stream", (userVideoStream) => {
-                // videos.push(userVideoStream);
                 // When we recieve their stream
-                // $(".view-gallery").on("click", () => {gallery(video, userVideoStream);})
-                // gallery(video, userVideoStream);
                 addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
                 // console.log(videos[0])
             });
@@ -40,23 +36,6 @@ navigator.mediaDevices
 
         socket.on("user-connected", (userId) => {
             console.log("user connected: ", userId);
-            // const Toast = Swal.mixin({
-            //     toast: true,
-            //     position: "top-end",
-            //     showConfirmButton: false,
-            //     timer: 3000,
-            //     timerProgressBar: true,
-            //     didOpen: (toast) => {
-            //         toast.addEventListener("mouseenter", Swal.stopTimer);
-            //         toast.addEventListener("mouseleave", Swal.resumeTimer);
-            //     },
-            // });
-
-            // Toast.fire({
-            //     icon: "info",
-            //     title: "New User in room",
-            // });
-            // If a new user connect
             connectToNewUser(userId, stream);
         });
         socket.on("user-disconnected", (userId) => {
@@ -91,7 +70,7 @@ function addVideoStream(video, stream, className) {
     video.className = className;
     $("video." + className).on("click", () => {
         videoMain.children[0].srcObject = video.srcObject;
-        // console.log("Clicou em: ", className)
+        console.log("Clicou: ", className)
     });
     video.addEventListener("loadedmetadata", () => {
         // Play the video as it loads
@@ -108,11 +87,11 @@ $(".quit").on("click", () => {
 $(".view-gallery").on("click", () => {
     if (videoMain.hidden) {
         videoMain.hidden = false;
-        videoGrid.hidden = true;
+        // videoGrid.hidden = true;
         videoGrid.style.removeProperty("display");
     } else {
         videoMain.hidden = true;
-        videoGrid.hidden = false;
+        // videoGrid.hidden = false;
         videoGrid.style.display = "inline-block";
     }
 });

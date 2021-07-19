@@ -1,7 +1,8 @@
 html,
 body {
-    height: 100%;
+    height: 100vh;
     margin: 0;
+    overflow: hidden;
 }
 body {
     background: #252731;
@@ -23,13 +24,13 @@ body {
     float: right;
     width: auto;
     margin: 10px;
-    grid-template-columns: repeat(auto-fill, 200px);
+    /* grid-template-columns: repeat(auto-fill, 200px);
     grid-gap: 20px;
-    grid-auto-rows: 200px;
+    grid-auto-rows: 200px; */
+    /* overflow-y: hidden; */
 }
 #video-grid > video
 {
-    margin: 10px;
     width: 200px;
     margin: 10px;
     height: 200px;
@@ -113,17 +114,16 @@ body {
         grid-gap: 20px;
         grid-auto-rows: 100% !important;
     }
-    #principal.active
-    {
-        display: none;
-    }
     #video-grid {
-        display: flex;
+        display: block;
         align-items: center;
         justify-content: flex-start;
         overflow: auto;
         float: left;
         scroll-behavior: smooth;
+        width: 90vh;
+        overflow-x: auto;
+        white-space: nowrap;
     }
     #video-grid > video {
         margin: 5px;
