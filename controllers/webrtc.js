@@ -116,3 +116,16 @@ $(".view-gallery").on("click", () => {
         videoGrid.style.display = "inline-block";
     }
 });
+
+var elem = document.getElementById("videoMain");
+elem.addEventListener("click", () => {
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    }
+})

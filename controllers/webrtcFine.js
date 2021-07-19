@@ -110,11 +110,24 @@ $(".view-gallery").on("click", () => {
     if (videoMain.hidden) {
         videoMain.hidden = false;
         videoGrid.hidden = true;
-        videoGrid.style.display = "block";
+        videoGrid.style.removeProperty("display");
     } else {
         videoMain.hidden = true;
         videoGrid.hidden = false;
-        videoGrid.style.removeProperty("display");
+        videoGrid.style.display = "inline-block";
     }
 });
+
+var elem = document.getElementById("videoMain");
+elem.addEventListener("click", () => {
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) {
+        elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    }
+})
 },{}]},{},[1]);
