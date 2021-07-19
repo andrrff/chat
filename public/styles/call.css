@@ -20,13 +20,11 @@ body {
 }
 #video-grid {
     display: inline-grid;
+    grid-template-columns: 100%;
+    grid-auto-rows: min-content;
     float: right;
     width: auto;
     margin: 10px;
-    /* grid-template-columns: repeat(auto-fill, 200px);
-    grid-gap: 20px;
-    grid-auto-rows: 200px; */
-    /* overflow-y: hidden; */
 }
 #video-grid > video
 {
@@ -120,7 +118,7 @@ body {
         overflow: auto;
         float: left;
         scroll-behavior: smooth;
-        width: 90vh;
+        width: 60vh !important;
         overflow-x: auto;
         white-space: nowrap;
     }
