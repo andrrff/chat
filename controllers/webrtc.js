@@ -85,7 +85,10 @@ function connectToNewUser(userId, stream) {
         // console.log(userVideoStream);
         addVideoStream(video, userVideoStream, userId);
         videos.push(userVideoStream)
-        gallery(videos);
+        var uniqueArray = elements.filter((item, pos) => {
+            return elements.indexOf(item) == pos;
+        });
+        gallery(uniqueArray);
         // gallery(video, userVideoStream);
     });
     // If they leave, remove their video
