@@ -63,6 +63,9 @@ io.on("connection", (socket) => {
         socket.join(roomId);
         socket.to(roomId).emit("recieve desktop media", userId); // Tell everyone else in the room that we joined
     })
+    socket.on("video config", (userId, roomId, video, audio) => {
+        socket.to(roomId).emit("config recieve", userId, video, audio); // Tell everyone else in the room that we joined
+    })
 
 
     socket.on("upload-image", (message) => {

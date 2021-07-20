@@ -9,6 +9,8 @@ const myPeerMedia = new Peer();
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
 const myDesktop = document.createElement("video"); // Create a new video tag to show our video
 var boolDesktop = false;
+var boolMicrofone = true;
+var boolCamera = true;
 var videos = [];
 myVideo.className = "iam";
 
@@ -20,8 +22,8 @@ myVideo.muted = true; // Mute ourselves on our end so there is no feedback loop
 // Access the user's video and audio
 navigator.mediaDevices
     .getUserMedia({
-        video: true,
-        audio: true,
+        video: boolCamera,
+        audio: boolMicrofone,
     })
     .then((stream) => {
         addVideoStream(myVideo, stream, myVideo.className); // Display our video to ourselves
@@ -34,7 +36,6 @@ navigator.mediaDevices
             call.on("stream", (userVideoStream) => {
                 // When we recieve their stream
                 addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
-                // console.log(videos[0])
             });
         });
 
@@ -51,7 +52,25 @@ navigator.mediaDevices
 
 myPeer.on("open", (id) => {
     // When we first open the app, have us join a room
+    $("button.video").on("click", () => {
+        boolCamera = !boolCamera;
+        console.log("camera: "+ boolCamera + " audio: "+ boolMicrofone);
+        socket.emit("video config", id, ROOM_ID, boolCamera, boolMicrofone);
+    });
+    $("button.microfone").on("click", () => {
+        boolMicrofone = !boolMicrofone;
+        console.log("camera: "+ boolCamera + " audio: "+ boolMicrofone);
+        socket.emit("video config", id, ROOM_ID, boolCamera, boolMicrofone);
+    });
     socket.emit("join-room", ROOM_ID, id);
+});
+
+socket.on("config recieve", (userId, video, audio) => {
+    console.log("user: "+userId+"camera: " + video + " audio: " + audio);
+    // $("video."+userId).muted = audio
+    var user = document.getElementsByClassName(userId);
+    user.muted = audio;
+    user.pause = video;
 });
 
 function connectToNewUser(userId, stream) {
@@ -175,7 +194,7 @@ async function startCapture() {
     videoMain.muted = false;
     return videoMain.children[0].srcObject;
 }
-function stopCapture(evt) {
+function stopCapture() {
     boolDesktop = false
     let tracks = document.querySelector("video.desktop").srcObject.getTracks();
 
