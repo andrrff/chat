@@ -54,11 +54,28 @@ myPeer.on("open", (id) => {
     // When we first open the app, have us join a room
     $("button.video").on("click", () => {
         boolCamera = !boolCamera;
-        console.log("camera: "+ boolCamera + " audio: "+ boolMicrofone);
+        if (boolCamera)
+        {
+            $("button.video").css("background-color", "#5fb4ff");
+            $("button.video").html('<i class="fas fa-video"></i>');
+        }
+        else
+        {
+            $("button.video").css("background-color", "#ff6161");
+            $("button.video").html("<i class=\"fas fa-video-slash\"></i>");
+        }
+        console.log("camera: " + boolCamera + " audio: " + boolMicrofone);
         socket.emit("video config", id, ROOM_ID, boolCamera, boolMicrofone);
     });
     $("button.microfone").on("click", () => {
         boolMicrofone = !boolMicrofone;
+        if (boolMicrofone) {
+            $("button.microfone").css("background-color", "#5fb4ff");
+            $("button.microfone").html('<i class="fas fa-microphone"></i>');
+        } else {
+            $("button.microfone").css("background-color", "#ff6161");
+            $("button.microfone").html('<i class="fas fa-microphone-slash"></i>');
+        }
         console.log("camera: "+ boolCamera + " audio: "+ boolMicrofone);
         socket.emit("video config", id, ROOM_ID, boolCamera, boolMicrofone);
     });
@@ -67,7 +84,6 @@ myPeer.on("open", (id) => {
 
 socket.on("config recieve", (userId, video, audio) => {
     console.log("user: "+userId+"camera: " + video + " audio: " + audio);
-    // $("video."+userId).muted = audio
     var user = document.getElementsByClassName(userId);
     user.muted = audio;
     user.pause = video;

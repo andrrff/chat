@@ -66,6 +66,14 @@ myPeer.on("open", (id) => {
     socket.emit("join-room", ROOM_ID, id);
 });
 
+socket.on("config recieve", (userId, video, audio) => {
+    console.log("user: "+userId+"camera: " + video + " audio: " + audio);
+    // $("video."+userId).muted = audio
+    var user = document.getElementsByClassName(userId);
+    user.muted = audio;
+    user.pause = video;
+});
+
 function connectToNewUser(userId, stream) {
     // This runs when someone joins our room
     const call = myPeer.call(userId, stream); // Call the user who just joined
