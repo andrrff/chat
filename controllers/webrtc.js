@@ -27,7 +27,7 @@ navigator.mediaDevices
 
         myPeer.on("call", (call) => {
             // When we join someone's room we will receive a call from them
-            // call.answer(); // Stream them our video/audio
+            // Stream them our video/audio
             call.answer(stream);
             const video = document.createElement("video"); // Create a video tag for them
             call.on("stream", (userVideoStream) => {
@@ -113,20 +113,43 @@ elem.addEventListener("click", () => {
     }
 })
 
+
 $(".desktop").on("click", () => {
     if (!boolDesktop) {
-        startCapture().then((result) => {
+        startCapture().then((stream) => {
+            addVideoStream(document.createElement("video"), stream, "desktop"); // Display our video to ourselves
             // myPeer.on("call", (call) => {
-            //     call.answer(result);
-            // })
+            //     // When we join someone's room we will receive a call from them
+            //     // Stream them our video/audio
+            //     call.answer(stream);
+            //     const video = document.createElement("video"); // Create a video tag for them
+            //     call.on("stream", (userVideoStream) => {
+            //         // When we recieve their stream
+            //         addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
+            //         // console.log(videos[0])
+            //     });
+            // });
 
+            // socket.on("user-connected", (userId) => {
+            //     console.log("user connected: ", userId);
+            //     connectToNewUser(userId, stream);
+            // });
+            // socket.on("user-disconnected", (userId) => {
+            //     // If a new user connect
+            //     $("video." + userId).remove();
+            //     console.log("user disconenected: ", userId);
+            // });
         });
     } else {
         $(".desktop").css("background-color", "#5fb4ff");
+        $("video.desktop").remove();
         // myPeer.on("call", (call) => {
         //     call.answer(stopCapture());
         // });
-        stopCapture()
+        stopCapture().then((result) => {
+
+        })
+        // window.onload
     }
 });
 
@@ -148,11 +171,21 @@ async function startCapture() {
     }
     return videoMain.children[0].srcObject;
 }
-function stopCapture(evt) {
+async function stopCapture(evt) {
     boolDesktop = false
     let tracks = videoMain.children[0].srcObject.getTracks();
 
     tracks.forEach((track) => track.stop());
     videoMain.children[0].srcObject = videoGrid.children[0].srcObject;
-    return videoMain.children[0].srcObject;
+    var returnVideoCamera;
+    try {
+        returnVideoCamera = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true,
+        });
+        $(".desktop").css("background-color", "#ff6161");
+    } catch (err) {
+        console.error("Error: " + err);
+    }
+    return returnVideoCamera;
 }

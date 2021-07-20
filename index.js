@@ -45,7 +45,8 @@ app.get("/", (_req, res) => {
 var usocket = {},
     user = [], 
     id = [],
-    messagesData = [];
+    messagesData = [],
+    userIdSocket = [];
 
 io.on("connection", (socket) => {
     //test
