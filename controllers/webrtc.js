@@ -6,6 +6,8 @@ var videoMain = document.getElementById("video-main"); // Find the Video-Main el
 
 const myPeer = new Peer(); // Creating a peer element which represents the current user
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
+const myDesktop = document.createElement("video"); // Create a new video tag to show our video
+var boolDesktop = false;
 var videos = [];
 myVideo.className = "iam";
 
@@ -25,7 +27,8 @@ navigator.mediaDevices
 
         myPeer.on("call", (call) => {
             // When we join someone's room we will receive a call from them
-            call.answer(stream); // Stream them our video/audio
+            // call.answer(); // Stream them our video/audio
+            call.answer(stream);
             const video = document.createElement("video"); // Create a video tag for them
             call.on("stream", (userVideoStream) => {
                 // When we recieve their stream
@@ -109,3 +112,47 @@ elem.addEventListener("click", () => {
         elem.msRequestFullscreen();
     }
 })
+
+$(".desktop").on("click", () => {
+    if (!boolDesktop) {
+        startCapture().then((result) => {
+            // myPeer.on("call", (call) => {
+            //     call.answer(result);
+            // })
+
+        });
+    } else {
+        $(".desktop").css("background-color", "#5fb4ff");
+        // myPeer.on("call", (call) => {
+        //     call.answer(stopCapture());
+        // });
+        stopCapture()
+    }
+});
+
+async function startCapture() {
+    boolDesktop = true;
+    try {
+        videoMain.children[0].srcObject =
+            await navigator.mediaDevices.getDisplayMedia({
+                video: {
+                    cursor: "always" | "motion" | "never",
+                    displaySurface:
+                        "application" | "browser" | "monitor" | "window",
+                },
+                audio: true,
+            });
+            $(".desktop").css("background-color", "#ff6161");
+    } catch (err) {
+        console.error("Error: " + err);
+    }
+    return videoMain.children[0].srcObject;
+}
+function stopCapture(evt) {
+    boolDesktop = false
+    let tracks = videoMain.children[0].srcObject.getTracks();
+
+    tracks.forEach((track) => track.stop());
+    videoMain.children[0].srcObject = videoGrid.children[0].srcObject;
+    return videoMain.children[0].srcObject;
+}
