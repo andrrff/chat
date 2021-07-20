@@ -69,6 +69,21 @@ function connectToNewUser(userId, stream) {
     });
 }
 
+function connectToNewMedia(userId, stream)
+{
+    const calldesktop = myPeer.call(userId, stream);
+    // Add their video
+    const video = document.createElement("video");
+    // video.className = userId;
+    calldesktop.on("stream", (userVideoStream) => {
+        addVideoStream(video, userVideoStream, userId);
+    });
+    // If they leave, remove their video
+    calldesktop.on("close", () => {
+        video.remove();
+    });
+}
+
 function addVideoStream(video, stream, className) {
     video.srcObject = stream;
     video.className = className;
@@ -114,18 +129,13 @@ elem.addEventListener("click", () => {
     }
 })
 
-socket.on("recieve desktop media", (userId) => {
-    console.log("new media: ", userId);
-    // connectToNewUser(userId, videoMain.children[0].srcObject);
-    socket.emit("user-connected");
+socket.on("recieve desktop media", () => {
+    console.log("reload");
+    window.location.reload();
 });
-
 
 // When we first open the app, have us join a room
 $("button.desktop").on("click", () => {
-    myPeerMedia.on("open", (id) => {
-        socket.emit("recieve desktop", ROOM_ID, id);
-    })
     if (!boolDesktop) {
         startCapture().then((stream) => {
             addVideoStream(document.createElement("video"), stream, "desktop"); // Display our video to ourselves
@@ -135,34 +145,16 @@ $("button.desktop").on("click", () => {
 
             socket.on("user-connected", (userId) => {
                 console.log("user connected: ", userId);
-                connectToNewUser(userId, stream);
+                connectToNewMedia(userId, stream);
             });
-
-            // socket.emit("join-room", ROOM_ID, "id");
-            // socket.emit("recieve desktop", ROOM_ID, stream);
+            socket.emit("recieve desktop", ROOM_ID);
         });
     } else {
         $("button.desktop").css("background-color", "#5fb4ff");
         stopCapture()
-        // console.log();
-        // myPeer.on("call", (call) => {
-        //     // When we join someone's room we will receive a call from them
-        //     // Stream them our video/audio
-        //     call.answer(stopCapture());
-        //     // const video = document.createElement("video"); // Create a video tag for them
-        //     call.on("stream", (userVideoStream) => {
-        //         // When we recieve their stream
-        //         addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
-        //         // console.log(videos[0])
-        //     });
-        // });
-
-        // socket.on("user-connected", (userId) => {
-        //     console.log("user connected: ", userId);
-        //     connectToNewUser(userId, stopCapture());
-        // });
+        window.location.reload();
     }
-});
+}); 
 
 async function startCapture() {
     boolDesktop = true;
