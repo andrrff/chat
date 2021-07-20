@@ -84,9 +84,8 @@ myPeer.on("open", (id) => {
 
 socket.on("config recieve", (userId, video, audio) => {
     console.log("user: "+userId+"camera: " + video + " audio: " + audio);
-    var user = document.getElementsByClassName(userId);
-    user.muted = audio;
-    user.pause = video;
+    $("video." + userId)[0].play = video;
+    $("video." + userId)[0].muted = audio;
 });
 
 function connectToNewUser(userId, stream) {
@@ -174,6 +173,7 @@ $("button.desktop").on("click", () => {
     if (!boolDesktop) {
         startCapture().then((stream) => {
             addVideoStream(document.createElement("video"), stream, "desktop"); // Display our video to ourselves
+            $("video.desktop")[0].muted = true;
             myPeer.on("call", (call) => {
                 call.answer(stream);
             });
