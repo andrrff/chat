@@ -45,12 +45,12 @@ app.get("/", (_req, res) => {
 var usocket = {},
     user = [], 
     id = [],
-    messagesData = [],
-    userIdSocket = [];
+    messagesData = []
 
 io.on("connection", (socket) => {
     //test
     socket.on("join-room", (roomId, userId) => {
+        console.log("new user "+userId+" in room: " + roomId)
         socket.join(roomId); // Join the room
         socket.to(roomId).emit("user-connected", userId); // Tell everyone else in the room that we joined
 
@@ -59,7 +59,10 @@ io.on("connection", (socket) => {
             socket.broadcast.emit("user-disconnected", userId);
         });
     });
-
+    socket.on("recieve desktop", (roomId, userId) => {
+        socket.join(roomId);
+        socket.to(roomId).emit("recieve desktop media", userId); // Tell everyone else in the room that we joined
+    })
 
 
     socket.on("upload-image", (message) => {
