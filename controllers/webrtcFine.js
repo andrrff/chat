@@ -71,11 +71,11 @@ myPeer.on("open", (id) => {
     $("button.microfone").on("click", () => {
         boolMicrofone = !boolMicrofone;
         if (boolMicrofone) {
-            $("button.microfone").css("background-color", "#5fb4ff");
-            $("button.microfone").html('<i class="fas fa-microphone"></i>');
-        } else {
             $("button.microfone").css("background-color", "#ff6161");
             $("button.microfone").html('<i class="fas fa-microphone-slash"></i>');
+        } else {
+            $("button.microfone").css("background-color", "#5fb4ff");
+            $("button.microfone").html('<i class="fas fa-microphone"></i>');
         }
         console.log("camera: "+ boolCamera + " audio: "+ boolMicrofone);
         socket.emit("video config", id, ROOM_ID, boolCamera, boolMicrofone);

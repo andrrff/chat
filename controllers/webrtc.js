@@ -9,8 +9,8 @@ const myPeerMedia = new Peer();
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
 const myDesktop = document.createElement("video"); // Create a new video tag to show our video
 var boolDesktop = false;
-var boolMicrofone = true;
-var boolCamera = true;
+var boolMicrofone = false;
+var boolCamera = false;
 var videos = [];
 myVideo.className = "iam";
 
@@ -22,8 +22,8 @@ myVideo.muted = true; // Mute ourselves on our end so there is no feedback loop
 // Access the user's video and audio
 navigator.mediaDevices
     .getUserMedia({
-        video: boolCamera,
-        audio: boolMicrofone,
+        video: true,
+        audio: true,
     })
     .then((stream) => {
         addVideoStream(myVideo, stream, myVideo.className); // Display our video to ourselves
@@ -56,13 +56,13 @@ myPeer.on("open", (id) => {
         boolCamera = !boolCamera;
         if (boolCamera)
         {
-            $("button.video").css("background-color", "#5fb4ff");
-            $("button.video").html('<i class="fas fa-video"></i>');
+            $("button.video").css("background-color", "#ff6161");
+            $("button.video").html('<i class="fas fa-video-slash"></i>');
         }
         else
         {
-            $("button.video").css("background-color", "#ff6161");
-            $("button.video").html("<i class=\"fas fa-video-slash\"></i>");
+            $("button.video").css("background-color", "#5fb4ff");
+            $("button.video").html('<i class="fas fa-video"></i>');
         }
         console.log("camera: " + boolCamera + " audio: " + boolMicrofone);
         socket.emit("video config", id, ROOM_ID, boolCamera, boolMicrofone);
