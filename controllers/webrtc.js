@@ -11,7 +11,7 @@ const myDesktop = document.createElement("video"); // Create a new video tag to 
 var boolDesktop = false;
 var boolMicrofone = false;
 var boolCamera = false;
-var videos;
+var videoUser = "iam";
 myVideo.className = "iam";
 
 myVideo.addEventListener("click", () => {
@@ -34,7 +34,9 @@ navigator.mediaDevices
             call.answer(stream);
             const video = document.createElement("video"); // Create a video tag for them
             call.on("stream", (userVideoStream) => {
-                addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
+                // console.log(videoUser.id)
+                    addVideoStream(video, userVideoStream, call.peer); // Display their video to ourselves
+                videoUser = userVideoStream;
             });
         });
 
@@ -171,7 +173,12 @@ socket.on("recieve desktop media", () => {
 $("button.desktop").on("click", () => {
     if (!boolDesktop) {
         startCapture().then((stream) => {
-            addVideoStream(document.createElement("video"), stream, "desktop"); // Display our video to ourselves
+            videoMain.children[0].srcObject = stream;
+            addVideoStream(
+                document.createElement("video"),
+                stream,
+                "desktop"
+            ); // Display our video to ourselves
             $("video.desktop")[0].muted = true;
             myPeer.on("call", (call) => {
                 call.answer(stream);

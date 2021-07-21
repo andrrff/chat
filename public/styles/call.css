@@ -5,6 +5,7 @@ body {
 }
 body {
     background: #252731;
+    overflow: hidden;
 }
 .btn-toggle {
     outline: none;
@@ -104,6 +105,9 @@ body {
     display: none;
 }
 @media only screen and (max-width: 900px) {
+    body {
+        overflow: auto;
+    }
     #principal {
         display: inline-table;
         /* margin: 10px; */
