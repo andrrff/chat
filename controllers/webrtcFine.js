@@ -12,6 +12,7 @@ const myDesktop = document.createElement("video"); // Create a new video tag to 
 var boolDesktop = false;
 var boolMicrofone = false;
 var boolCamera = false;
+var count = 0;
 var videoUser = "iam";
 myVideo.className = "iam";
 
@@ -127,6 +128,31 @@ function addVideoStream(video, stream, className) {
         videoMain.children[0].srcObject = video.srcObject;
         // video.style.border
     });
+
+    // $("#video-grid").find("video."+video.className, () => {
+    //     console.log("achou!")
+    // })
+    // $(videoGrid).each((index, element, self) => {
+    //     // console.log(element.children[index])
+    //     console.log(index)
+    // })
+    for(i = 0; i < videoGrid.getElementsByTagName("video").length;i++)
+    {
+        if (videoGrid.getElementsByTagName("video")[i + 1] != undefined)
+        {
+            console.log(
+                videoGrid.getElementsByTagName("video")[i + 1].className
+            );
+            // if (
+            //     videoGrid.getElementsByTagName("video")[i].className ==
+            //     videoGrid.getElementsByTagName("video")[i + 1].className
+            // ) {
+            //     videoGrid.getElementsByTagName("video")[i].remove
+            //     // console.log(videoGrid.getElementsByTagName("video")[i]);
+            //     // videoGrid.getElementsByTagName("video")[i].children[0].className)
+            // }
+        }
+    }
     video.addEventListener("loadedmetadata", () => {
         // Play the video as it loads
         video.play();
@@ -185,6 +211,11 @@ $("button.desktop").on("click", () => {
                 call.answer(stream);
             });
 
+            $("video.desktop").on("click", () => {
+                videoMain.children[0].srcObject = stream;
+            })
+
+            
             socket.on("user-connected", (userId) => {
                 console.log("user connected: ", userId);
                 connectToNewMedia(userId, stream);
