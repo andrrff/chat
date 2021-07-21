@@ -12,6 +12,7 @@ const myDesktop = document.createElement("video"); // Create a new video tag to 
 var boolDesktop = false;
 var boolMicrofone = false;
 var boolCamera = false;
+var boolGallery = false;
 var count = 0;
 var videoUser = "iam";
 myVideo.className = "iam";
@@ -126,35 +127,22 @@ function addVideoStream(video, stream, className) {
     video.className = className;
     $("video." + className).on("click", () => {
         videoMain.children[0].srcObject = video.srcObject;
-        // video.style.border
+        if (boolGallery) {
+            $(this)[0].muted = !$(this)[0].muted;
+            console.log($(this)[0].muted);
+        }
     });
 
-    // $("#video-grid").find("video."+video.className, () => {
-    //     console.log("achou!")
-    // })
-    // $(videoGrid).each((index, element, self) => {
-    //     // console.log(element.children[index])
-    //     console.log(index)
-    // })
-    for(i = 0; i < videoGrid.getElementsByTagName("video").length;i++)
-    {
-        if (videoGrid.getElementsByTagName("video")[i + 1] != undefined)
-        {
-            console.log(
-                videoGrid.getElementsByTagName("video")[i + 1].className
-            );
-            // if (
-            //     videoGrid.getElementsByTagName("video")[i].className ==
-            //     videoGrid.getElementsByTagName("video")[i + 1].className
-            // ) {
-            //     videoGrid.getElementsByTagName("video")[i].remove
-            //     // console.log(videoGrid.getElementsByTagName("video")[i]);
-            //     // videoGrid.getElementsByTagName("video")[i].children[0].className)
-            // }
-        }
-    }
+    // for(i = 0; i < videoGrid.getElementsByTagName("video").length;i++)
+    // {
+    //     if (videoGrid.getElementsByTagName("video")[i + 1] != undefined)
+    //     {
+    //         console.log(
+    //             videoGrid.getElementsByTagName("video")[i + 1].className
+    //         );
+    //     }
+    // }
     video.addEventListener("loadedmetadata", () => {
-        // Play the video as it loads
         video.play();
     });
     videoGrid.append(video); // Append video element to videoGrid
@@ -166,6 +154,12 @@ $(".quit").on("click", () => {
 })
 
 $(".view-gallery").on("click", () => {
+    boolGallery = !boolGallery;
+    if (boolGallery) {
+        $("button.view-gallery").css("background-color", "#ff6161");
+    } else {
+        $("button.view-gallery").css("background-color", "#5fb4ff");
+    }
     if (videoMain.hidden) {
         videoMain.hidden = false;
         // videoGrid.hidden = true;
@@ -214,7 +208,6 @@ $("button.desktop").on("click", () => {
             $("video.desktop").on("click", () => {
                 videoMain.children[0].srcObject = stream;
             })
-
             
             socket.on("user-connected", (userId) => {
                 console.log("user connected: ", userId);
