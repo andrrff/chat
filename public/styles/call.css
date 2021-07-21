@@ -106,7 +106,7 @@ body {
 }
 @media only screen and (max-width: 900px) {
     body {
-        overflow: auto;
+        overflow-x: hidden;
     }
     #principal {
         display: inline-table;
