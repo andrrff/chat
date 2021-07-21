@@ -9,7 +9,7 @@ const myPeerMedia = new Peer();
 const myVideo = document.createElement("video"); // Create a new video tag to show our video
 const myDesktop = document.createElement("video"); // Create a new video tag to show our video
 var boolDesktop = false;
-var boolMicrofone = false;
+var boolMicrofone = true;
 var boolCamera = false;
 var videoUser = "iam";
 myVideo.className = "iam";
@@ -129,6 +129,7 @@ function addVideoStream(video, stream, className) {
     video.addEventListener("loadedmetadata", () => {
         // Play the video as it loads
         video.play();
+        video.muted = true;
     });
     videoGrid.append(video); // Append video element to videoGrid
     videoMain.children[0].srcObject = stream; //Video principal
