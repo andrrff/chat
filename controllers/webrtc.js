@@ -229,11 +229,11 @@ async function startCapture() {
     try {
         videoMain.children[0].srcObject =
             await navigator.mediaDevices.getDisplayMedia({
-                video: {
-                    cursor: "always" | "motion" | "never",
-                    displaySurface:
-                        "application" | "browser" | "monitor" | "window",
-                },
+                // video: {
+                //     cursor: "always" | "motion" | "never",
+                //     displaySurface:
+                //         "application" | "browser" | "monitor" | "window",
+                // },
                 audio: true,
             });
             $("button.desktop").css("background-color", "#ff6161");

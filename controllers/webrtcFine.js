@@ -127,10 +127,13 @@ function addVideoStream(video, stream, className) {
     video.className = className;
     $("video." + className).on("click", () => {
         videoMain.children[0].srcObject = video.srcObject;
-        if (boolGallery) {
-            $(this)[0].muted = !$(this)[0].muted;
-            console.log($(this)[0].muted);
-        }
+        // if (boolGallery) {
+        //     $("video." + className)[0].muted = !$("video." + className)[0].muted;
+        //     console.log(
+        //         $("video." + className),
+        //         $("video." + className)[0].muted
+        //     );
+        // }
     });
 
     // for(i = 0; i < videoGrid.getElementsByTagName("video").length;i++)
@@ -227,11 +230,11 @@ async function startCapture() {
     try {
         videoMain.children[0].srcObject =
             await navigator.mediaDevices.getDisplayMedia({
-                video: {
-                    cursor: "always" | "motion" | "never",
-                    displaySurface:
-                        "application" | "browser" | "monitor" | "window",
-                },
+                // video: {
+                //     cursor: "always" | "motion" | "never",
+                //     displaySurface:
+                //         "application" | "browser" | "monitor" | "window",
+                // },
                 audio: true,
             });
             $("button.desktop").css("background-color", "#ff6161");

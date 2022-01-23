@@ -129,6 +129,7 @@ io.on("connection", (socket) => {
     //Recieve address and send to address(private chat)
     socket.on("send message private", (message, address) => {
         console.log(message);
+        messagesData.push(message);
         io.to(address).emit("selected", message);
     });
 
